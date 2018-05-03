@@ -9,20 +9,25 @@ class PillOrg extends React.Component {
     this.state = {
       schedule:
         {
-          meds: [ {medName: 'Zrytec', medTime: '12:00PM'},
-                  {medName: 'Xanax', medTime: '12:00PM'},
-                  {medName: 'LSD', medTime: '3:00AM'}
-                ],
+          times: [ '12:00PM'
+                 , '3:00AM'
+                 ],
+
+          meds: [ 'Zrytec', 'Xanax', 'LSD'],
+
+          medTimes: [[0,1], [1,2]],
         },
     };
   }
 
   render() {
-    const meds = this.state.schedule.meds;
+    const meds = this.state.schedule.med;
     const medList = meds.map(function(med){
+      medsAtTime = meds.filter(other => other.medTime === med.medTime);
+      medNames = medsAtTime.map(m => m.medName);
       return (
         <div>
-          <li> {med.medName} at {med.medTime} </li>
+          <li> At {med.medTime} take {med.medNames} </li>
         </div>
       );
     });
