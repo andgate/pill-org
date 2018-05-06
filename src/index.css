@@ -18,29 +18,7 @@ body {
   flex-direction: column;
 }
 
-.medList ol, ul {
-  padding-left: 30px;
-  background-color: #003399;
-  color: #FFF;
-  border: 2px solid #0066FF;
-}
-
 .medTimer {
   font: 40px "Comic Sans";
   margin: 70px;
-}
-
-.medList button {
-  padding: 10px;
-  font-size: 16px;
-  margin: 10px;
-  margin-right: 0px;
-  background-color: #0066FF;
-  color: #FFF;
-  border: 2px solid #0066FF;
-}
-.medList button:hover {
-  background-color: #003399;
-  border: 2px solid #003399;
-  cursor: pointer;
 }

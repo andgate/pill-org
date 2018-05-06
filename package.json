@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "material-ui": "^0.20.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "react-modal": "^3.4.4",
     "react-scripts": "1.1.4"
   },
   "scripts": {
