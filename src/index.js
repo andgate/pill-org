@@ -1,33 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Modal from 'react-modal';
 import './index.css'
 
-
-
-class PillList extends React.Component {
+class MedList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pills: [{name: 'Xanax', dose: 5, }],
+      pills: [{name: 'Xanax', dose: 5, }, {name: 'Adderall', dose: 50, },{name: 'Zoloft', dose: 100, }],
     };
-  }
-
-
-  const Med = ({med, remove}) => {
-    return (<li onClick(remove(med.name))>{med.name} {med.dose}</li>);
   }
 
   render() {
     const pills = this.state.pills;
     const listPills = pills.map((pill) =>
       <li key={pill.toString()}>
-        {pill.name} {pill.dose}
+        {pill.name} {pill.dose}mg
       </li>
     );
 
     return (
-      <div className="Pills">
-        <h1>Pills</h1>
+      <div className="medList">
+        <h1>Medications</h1>
+          <button onClick={this.openModal}>add</button>
+          <Modal
+            >
+            <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
+            <button onClick={this.closeModal}>close</button>
+          </Modal>
         <ul>{listPills}</ul>
       </div>
     );
@@ -35,7 +35,7 @@ class PillList extends React.Component {
 }
 
 
-class PillTimer extends React.Component {
+class MedTimer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -61,40 +61,20 @@ class PillTimer extends React.Component {
 
   render() {
     return (
-      <div className="time">
+      <div className="medTimer">
         {this.state.counter}
       </div>
     );
   }
 }
 
-class PillOrg extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      schedule:
-        {
-          times: [ '12:00PM'
-                 , '3:00AM'
-                 ],
-
-          meds: [ 'Zrytec', 'Xanax', 'LSD'],
-
-          medTimes: [[0,1], [1,2]],
-        },
-    };
-  }
-
+class MedOrg extends React.Component {
   render() {
 
     return (
-      <div className="pillorg">
-        <PillTimer />
-        <input ref={node => { input = node }} />
-        <button onClick={() => { addTodo(input.value);  input.value = ''; }}>+</button>
-        <div className="pillList">
-          <PillList />
-        </div>
+      <div className="medorg">
+        <MedTimer />
+        <MedList />
       </div>
     );
   }
@@ -102,5 +82,5 @@ class PillOrg extends React.Component {
 
 // ========================================
 
-ReactDOM.render(<PillOrg />, document.getElementById("root"));
+ReactDOM.render(<MedOrg />, document.getElementById("root"));
 
