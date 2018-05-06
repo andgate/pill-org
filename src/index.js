@@ -53,7 +53,7 @@ class MedList extends React.Component {
 
     return (
       <div className="medList">
-        <h1>Medications</h1>
+        <h2>Medications</h2>
           <button onClick={this.openModal}>add</button>
           <Modal
               isOpen={this.state.modalIsOpen}
@@ -119,10 +119,15 @@ class MedOrg extends React.Component {
   render() {
 
     return (
-      <div className="medorg">
-        <MedSchedule />
-        <MedTimer />
-        <MedList />
+      <div className="medorg-container">
+        <div className="medorg-header">
+          <h1>Medication Organizer</h1>
+        </div>
+        <div className="medorg-body">
+          <MedSchedule />
+          <MedTimer />
+          <MedList />
+        </div>
       </div>
     );
   }

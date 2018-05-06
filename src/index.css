@@ -3,9 +3,19 @@ body {
   margin: 20px;
 }
 
-.medorg {
+.medorg-body {
   display: flex;
   flex-direction: row;
+}
+
+.medorg-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.medorg-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .medList ol, ul {
