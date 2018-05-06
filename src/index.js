@@ -1,19 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
-import Drawer from 'material-ui/Drawer';
+import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TimePicker from 'material-ui/TimePicker';
-import classNames from 'classnames';
-import ExpansionPanel, {
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  ExpansionPanelActions,
-  } from 'material-ui/ExpansionPanel';
+import {List, ListItem} from 'material-ui/List';
 
 
 const styles = theme => ({
@@ -56,9 +53,9 @@ class MedList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      openAddPill: false,
       pillEdit: {name: "", dose: 0, time: 0},
       pills: [{name: 'Xanax', dose: 5, time:'9:00 am'}, {name: 'Adderall', dose: 50, time:'9:00 am' },{name: 'Zoloft', dose: 100, time:'12:00 pm' }],
-      right: false,
     };
 
 
@@ -66,8 +63,7 @@ class MedList extends React.Component {
     this.onChangeDose = this.onChangeDose.bind(this);
     this.onChangeTime = this.onChangeTime.bind(this);
 
-    this.toggleDrawer = this.toggleDrawer.bind(this);
-
+    this.onChangeTime = this.onChangeTime.bind(this);
   }
 
 
@@ -83,60 +79,61 @@ class MedList extends React.Component {
     this.setState({ pillEdit: pillEdit });
   }
 
-  onChangeTime = (time) => {
+  onChangeTime = (foo, time) => {
     let pillEdit = this.state.pillEdit;
     pillEdit.time = time;
     this.setState({ pillEdit: pillEdit });
   }
 
+  onOpenAddPill = () => {
+    this.setState({openAddPill: true});
+  };
 
-  onSubmit = (event) => {
+  onCloseAddPill = () => {
+    this.setState({openAddPill: false});
+  };
+
+
+  onSubmitAddPill = (event) => {
     event.preventDefault();
     this.setState({ pills: [...this.state.pills, this.state.pillEdit] });
-    this.toggleDrawer(false);
-  }
- 
-  toggleDrawer = (open) => () => {
-    this.setState({
-      right: open,
-    });
+    this.onCloseAddPill();
   }
  
 
   render() {
     const pills = this.state.pills;
 
+    const actions = [
+      <FlatButton
+        label="Ok"
+        primary={true}
+        onClick={this.onSubmitAddPill}
+      />,
+      <FlatButton
+        label="Close"
+        primary={true}
+        keyboardFocused={true}
+        onClick={this.onCloseAddPill}
+      />,
+    ];
+
     return (
       <div>
         <Paper className="medList" elevation={4}>
           <h2>Medications</h2>
-          <RaisedButton label="Add" onClick={this.toggleDrawer(true)} />
-
-          <Drawer anchor="right" open={this.state.right} onClose={this.toggleDrawer(false)}>
-            <div
-              tabIndex={0}
-              role="button"
-              >
-              <h2 ref={subtitle => this.subtitle = subtitle}>Medication Information</h2>
-              <List>
-                <ListItem>
-                  <TextField value={this.state.pillEdit.name} onChange={this.onChangeName} />
-                </ListItem>
-                <ListItem>
-                  <TextField value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
-                </ListItem>
-                <ListItem>
-                  <TimePicker value={this.state.pillEdit.dose} onChange={this.onChangeTime} />
-                </ListItem>
-                <ListItem>
-                  <RaisedButton label="Close" onClick={this.toggleDrawer(false)} />
-                </ListItem>
-                <ListItem>
-                  <RaisedButton label="Add" onClick={this.onSubmit} />
-                </ListItem>
-              </List>
-            </div>
-          </Drawer>
+          <RaisedButton label="Add" onClick={this.onOpenAddPill} />
+          <Dialog
+            title="Add Medication"
+            actions={actions}
+            modal={false}
+            open={this.state.openAddPill}
+            onRequestClose={this.onCloseAddPill}
+          >
+            <TextField value={this.state.pillEdit.name} onChange={this.onChangeName} />
+            <TextField value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
+            <TimePicker onChange={this.onChangeTime} format='ampm' />
+          </Dialog>
 
           <List>
             {pills.map( (pill) => { return <ListItem primaryText={pill.name + " " + pill.dose + "mg " + pill.time}/>; } )}
@@ -148,11 +145,23 @@ class MedList extends React.Component {
 }
 
 class MedSchedule extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      schedule: [{time:"9:00 AM", meds: ["Xanax, Adderall"]}, {time:"12:00 PM", meds: ["Zoloft"]}, ],
+    };
+  }
+
   render() {
+    const schedule = this.state.schedule;
+
     return (
-      <div className="medSchedule">
-        <Paper>
-        <h2>Schedule</h2>
+      <div>
+        <Paper className="medSchedule">
+          <h2>Schedule</h2>
+          <List>
+              {schedule.map( (event) => { return <ListItem primaryText={event.time + " " + event.meds}/>; } )}
+          </List>
         </Paper>
       </div>
     );
@@ -166,9 +175,11 @@ class MedTimer extends React.Component {
     this.state = {
       timer: null,
       counter: 0,
+      nextRound: {time: 0, meds: []},
     };
 
     this.tick = this.tick.bind(this);
+    this.nextRound = this.nextRound.bind(this);
   }
 
   componentDidMount() {
@@ -184,11 +195,16 @@ class MedTimer extends React.Component {
     this.setState({counter: this.state.counter + 1});
   }
 
+  onScheduleChange(event) {
+    this.nextRound = event.state.schedule[0];
+  }
+
   render() {
     return (
       <div>
+        <MedSchedule onChange={this.onScheduleChange} />
         <Paper className="medTimer" elevation={4}>
-        {this.state.counter}
+          <TextField>{this.state.nextRound.time}</TextField>
         </Paper>
       </div>
     );
@@ -199,16 +215,11 @@ class MedOrg extends React.Component {
   render() {
 
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider /*muiTheme={getMuiTheme(darkBaseTheme)}*/ >
       <div className="medorg-container">
-        <div className="medorg-header">
-          <h1>Medication Organizer</h1>
-        </div>
-        <div className="medorg-body">
-          <MedSchedule />
-          <MedTimer />
-          <MedList />
-        </div>
+        <AppBar title="Medication Organizer" />
+        <MedSchedule />
+        <MedList />
       </div>
       </MuiThemeProvider>
     );
