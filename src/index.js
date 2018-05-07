@@ -5,12 +5,15 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import TimePicker from 'material-ui/TimePicker';
 import {List, ListItem} from 'material-ui/List';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
 
 const styles = theme => ({
@@ -120,9 +123,12 @@ class MedList extends React.Component {
 
     return (
       <div>
-        <Paper className="medList" elevation={4}>
-          <h2>Medications</h2>
-          <RaisedButton label="Add" onClick={this.onOpenAddPill} />
+        <Card>
+          <CardHeader title="Medications" />
+          <FloatingActionButton mini={true} onClick={this.onOpenAddPill} >
+              <ContentAdd />
+          </FloatingActionButton>
+
           <Dialog
             title="Add Medication"
             actions={actions}
@@ -138,7 +144,7 @@ class MedList extends React.Component {
           <List>
             {pills.map( (pill) => { return <ListItem primaryText={pill.name + " " + pill.dose + "mg " + pill.time}/>; } )}
           </List>
-        </Paper>
+        </Card>
       </div>
     );
   }
@@ -157,12 +163,17 @@ class MedSchedule extends React.Component {
 
     return (
       <div>
-        <Paper className="medSchedule">
-          <h2>Schedule</h2>
-          <List>
-              {schedule.map( (event) => { return <ListItem primaryText={event.time + " " + event.meds}/>; } )}
-          </List>
-        </Paper>
+        <Card>
+          <CardHeader
+            title="Medication Schedule"
+            subtitle="by soonest"
+          />
+          <CardText>
+            <List>
+                {schedule.map( (event) => { return <ListItem primaryText={event.time + " " + event.meds}/>; } )}
+            </List>
+          </CardText>
+        </Card>
       </div>
     );
   }
@@ -179,7 +190,6 @@ class MedTimer extends React.Component {
     };
 
     this.tick = this.tick.bind(this);
-    this.nextRound = this.nextRound.bind(this);
   }
 
   componentDidMount() {
@@ -202,25 +212,51 @@ class MedTimer extends React.Component {
   render() {
     return (
       <div>
-        <MedSchedule onChange={this.onScheduleChange} />
-        <Paper className="medTimer" elevation={4}>
-          <TextField>{this.state.nextRound.time}</TextField>
-        </Paper>
+        <Card>
+          <CardHeader
+            title="Timer"
+            subtitle="til next round of meds"
+          />
+          <CardText>
+            {this.state.nextRound.time}
+            {this.state.counter}
+          </CardText>
+        </Card>
       </div>
     );
   }
 }
 
 class MedOrg extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      schedule: null,
+    };
+  }
+
+  onScheduleChange(event) {
+    this.schedule = event.state.schedule;
+  }
+
   render() {
 
     return (
       <MuiThemeProvider /*muiTheme={getMuiTheme(darkBaseTheme)}*/ >
-      <div className="medorg-container">
         <AppBar title="Medication Organizer" />
-        <MedSchedule />
-        <MedList />
-      </div>
+        <Grid fluid>
+          <Row>
+            <Col xs={6} md={4} >
+              <MedSchedule onChange={this.onScheduleChange} />
+            </Col>
+            <Col xs={6} md={3} >
+              <MedTimer schedule={this.schedule} />
+            </Col>
+            <Col xs={6} md={5} >
+              <MedList />
+            </Col>
+          </Row>
+        </Grid>
       </MuiThemeProvider>
     );
   }
