@@ -13,6 +13,8 @@ import Paper from 'material-ui/Paper';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
 
+var Multimap = require('multimap'); /* docs: https://github.com/villadora/multi-map */
+
 //import Dialog from 'react-toolbox/lib/dialog/Dialog';
 //import Input from 'react-toolbox/lib/input/Input';
 //import Layout from 'react-toolbox/lib/layout/Layout';
@@ -28,10 +30,9 @@ class MedList extends React.Component {
     super(props);
     this.state = {
       addPillVisible: false,
-      pillEdit: {name: "", dose: 0, time: 0},
-      pills: [{name: 'Xanax', dose: 5, time:'9:00 am'}, {name: 'Adderall', dose: 50, time:'9:00 am' },{name: 'Zoloft', dose: 100, time:'12:00 pm' }],
+      pillEdit: {name: "", dose: 0, times: [0]},
+      meds: []
     };
-
 
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeDose = this.onChangeDose.bind(this);
@@ -46,24 +47,23 @@ class MedList extends React.Component {
 
   onChangeName = (event) => {
     let pillEdit = this.state.pillEdit;
-    pillEdit.name = event;
+    pillEdit.name = event.value;
     this.setState({ pillEdit: pillEdit });
   }
 
   onChangeDose = (event) => {
     let pillEdit = this.state.pillEdit;
-    pillEdit.dose = event;
+    pillEdit.dose = event.value;
     this.setState({ pillEdit: pillEdit });
   }
 
-  onChangeTime = (time) => {
+  onChangeTime = (event, time) => {
     let pillEdit = this.state.pillEdit;
-    pillEdit.time = time;
+    pillEdit.times = [time];
     this.setState({ pillEdit: pillEdit });
   }
 
   toggleAddPill = () => {
-    this.setState({addPillVisible: true});
     this.setState({addPillVisible: !this.state.addPillVisible});
   };
 
@@ -77,13 +77,14 @@ class MedList extends React.Component {
 
   saveAddPill = (event) => {
     event.preventDefault();
-    this.setState({ pills: [...this.state.pills, this.state.pillEdit] });
-    this.onCloseAddPill();
+    let pillEdit = this.state.pillEdit;
+    this.setState({meds: [...this.state.meds, pillEdit], addPillVisible: false});
+
+    this.props.onMedsChange(this.state.meds);
   }
- 
 
   render() {
-    const pills = this.state.pills;
+    const meds = this.state.meds;
 
     const actions = [
       <FlatButton
@@ -92,7 +93,7 @@ class MedList extends React.Component {
         onClick={this.closeAddPill}
       />,
       <FlatButton
-        label="Submit"
+        label="Add"
         primary={true}
         keyboardFocused={true}
         onClick={this.saveAddPill}
@@ -101,49 +102,38 @@ class MedList extends React.Component {
 
     return (
       <Paper>
-        <div className="clearfix">
-          <span style={{ "lineHeight": "36px" }}>Medications</span>
-          <span style={{ "float": "right" }}>
-            <RaisedButton label='Add' onClick={this.openAddPill} />
-          </span>
-        </div>
+        <h2>Medications</h2>
+        <RaisedButton label='Add' onClick={this.openAddPill} />
         <Dialog
           title='Add Medication'
           actions={actions}
           modal={false}
           open={this.state.addPillVisible}
-          onRequestClose={this.handleClose}
+          onRequestClose={this.closeAddPill}
         >
           <TextField hintText='Name' value={this.state.pillEdit.name} onChange={this.onChangeName} />
           <TextField hintText='Dose' value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
           <TimePicker hintText="12hr Format" value={this.state.pillEdit.time} onChange={this.onChangeTime} />
-          <RaisedButton label='Add' onClick={this.openAddPill} />
-          <RaisedButton label='Add' onClick={this.openAddPill} />
         </Dialog>
 
-        {pills.map(pill => (<div className="text item">{pill.name + " " + pill.dose + "mg " + pill.time}</div>))}
+        {meds.map(med => (<div className="text item">{med.name + " " + med.dose + "mg " + med.time}</div>))}
       </Paper>
     );
   }
 }
 
 class MedSchedule extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      schedule: [{time:"9:00 AM", meds: ["Xanax, Adderall"]}, {time:"12:00 PM", meds: ["Zoloft"]}, ],
-    };
-  }
-
   render() {
-    const schedule = this.state.schedule;
+    const schedule = this.props.schedule;
 
     return (
       <Paper>
         <div className="clearfix">
               <span style={{ "lineHeight": "36px" }}>Schedule</span>
         </div>
-        {schedule.map(event => (<div className="text item">{event.time + " " + event.meds}</div>))}
+        <List>
+        {schedule.forEachEntry((meds, time) => (<ListItem>{time + " " + meds}</ListItem>))}
+        </List>
       </Paper>
     );
   }
@@ -175,10 +165,6 @@ class MedTimer extends React.Component {
     this.setState({counter: this.state.counter + 1});
   }
 
-  onScheduleChange(event) {
-    this.nextRound = event.state.schedule[0];
-  }
-
   render() {
     return (
       <Paper>
@@ -195,33 +181,48 @@ class MedOrg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      schedule: null,
+      schedule: new Multimap(),
+      meds: [],
     };
+
+    this.onMedsChange = this.onMedsChange.bind(this);
   }
 
-  onScheduleChange(event) {
-    this.schedule = event.state.schedule;
+  onMedsChange(newMeds) {
+    //optionally, ensure that typedFunction is being called properly  -- here's a start:
+    if (!(newMeds instanceof Array)) throw Error('invalid argument: newMeds must be an array');
+
+    let schedule = this.state.schedule;
+    schedule.clear(); 
+    newMeds.forEach((med) =>
+      med.times.forEach((time) =>
+        schedule.set(med.time, {name: med.name, dose: med.dose})
+      )
+    );
+    this.setState({schedule: schedule});
   }
 
   render() {
+    let schedule = this.state.schedule;
+    let meds = this.state.meds;
 
     return (
       <MuiThemeProvider>
         <Grid fluid>
           <Row>
-            <AppBar>Med Organizer</AppBar>
+            <AppBar title="Med Organizer" />
           </Row>
           <Row>
             <Col xs>
-              <MedSchedule onChange={this.onScheduleChange} />
+              <MedSchedule schedule={schedule} />
             </Col>
 
             <Col xs>
-              <MedTimer schedule={this.schedule} />
+              <MedTimer schedule={schedule} />
             </Col>
 
             <Col xs>
-              <MedList />
+              <MedList meds={meds} onMedsChange={this.onMedsChange}/>
             </Col>
           </Row>
         </Grid>
