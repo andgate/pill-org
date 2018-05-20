@@ -9,8 +9,7 @@ After installing node, install dependencies locally.
 npm install
 ```
 
-Finally, to start the application.
+Finally, start the application:
 ```
 npm start
 ```
-This will start an instance of a node server which will serve our SSA.
