@@ -15,15 +15,6 @@ import TextField from 'material-ui/TextField';
 
 var Multimap = require('multimap'); /* docs: https://github.com/villadora/multi-map */
 
-//import Dialog from 'react-toolbox/lib/dialog/Dialog';
-//import Input from 'react-toolbox/lib/input/Input';
-//import Layout from 'react-toolbox/lib/layout/Layout';
-//import Panel from 'react-toolbox/lib/layout/Panel';
-//import Card from 'react-toolbox/lib/card/Card';
-//import TimePicker from 'react-toolbox/lib/time_picker/TimePicker';
-//import { Layout, NavDrawer, Panel, Sidebar } from 'react-toolbox';
-//import { Card, CardMedia, CardTitle, CardText, CardActions } from 'react-toolbox/lib/card';
-
 
 class MedList extends React.Component {
   constructor(props) {
