@@ -227,7 +227,7 @@ class MedOrg extends React.Component {
             </Col>
 
             <Col xs>
-              <MedTimer endDat=e{new Date('December 1, 2019 12:00:00')} />
+              <MedTimer endDate={new Date('December 1, 2019 12:00:00')} />
             </Col>
 
             <Col xs>
