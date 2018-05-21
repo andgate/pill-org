@@ -21,13 +21,12 @@ class MedList extends React.Component {
     super(props);
     this.state = {
       addPillVisible: false,
-      pillEdit: {name: "", dose: 0, times: [0]},
-      meds: []
+      pillEdit: {name: "", dose: 0, times: []},
     };
 
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeDose = this.onChangeDose.bind(this);
-    this.onChangeTime = this.onChangeTime.bind(this);
+    this.onChangeTimes = this.onChangeTimes.bind(this);
 
     this.toggleAddPill = this.toggleAddPill.bind(this);
     this.openAddPill = this.openAddPill.bind(this);
@@ -38,17 +37,17 @@ class MedList extends React.Component {
 
   onChangeName = (event) => {
     let pillEdit = this.state.pillEdit;
-    pillEdit.name = event.value;
+    pillEdit.name = event.target.value;
     this.setState({ pillEdit: pillEdit });
   }
 
   onChangeDose = (event) => {
     let pillEdit = this.state.pillEdit;
-    pillEdit.dose = event.value;
+    pillEdit.dose = event.target.value;
     this.setState({ pillEdit: pillEdit });
   }
 
-  onChangeTime = (event, time) => {
+  onChangeTimes = (event, time) => {
     let pillEdit = this.state.pillEdit;
     pillEdit.times = [time];
     this.setState({ pillEdit: pillEdit });
@@ -63,19 +62,18 @@ class MedList extends React.Component {
   }
 
   closeAddPill = () => {
-    this.setState({addPillVisible: false});
+    this.setState({addPillVisible: false, pillEdit: {name: "", dose: 0, times: [0]},});
   }
 
   saveAddPill = (event) => {
     event.preventDefault();
     let pillEdit = this.state.pillEdit;
-    this.setState({meds: [...this.state.meds, pillEdit], addPillVisible: false});
-
-    this.props.onMedsChange(this.state.meds);
+    this.props.onAddMed(pillEdit.name, pillEdit.dose, pillEdit.times);
+    this.closeAddPill();
   }
 
   render() {
-    const meds = this.state.meds;
+    const meds = this.props.meds;
 
     const actions = [
       <FlatButton
@@ -104,10 +102,10 @@ class MedList extends React.Component {
         >
           <TextField hintText='Name' value={this.state.pillEdit.name} onChange={this.onChangeName} />
           <TextField hintText='Dose' value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
-          <TimePicker hintText="12hr Format" value={this.state.pillEdit.time} onChange={this.onChangeTime} />
+          <TimePicker hintText="12hr Format" value={this.state.pillEdit.times} onChange={this.onChangeTime} />
         </Dialog>
 
-        {meds.map(med => (<div className="text item">{med.name + " " + med.dose + "mg " + med.time}</div>))}
+        {meds.map(med => (<div>{med.name + " " + med.dose + "mg " + med.times}</div>))}
       </Paper>
     );
   }
@@ -115,13 +113,13 @@ class MedList extends React.Component {
 
 class MedSchedule extends React.Component {
   render() {
-    const schedule = this.props.schedule;
+    let schedule = this.props.schedule;
 
     return (
       <Paper>
         <h2>Schedule</h2>
         <List>
-        {schedule.forEachEntry((meds, time) => (<ListItem>{time + " " + meds}</ListItem>))}
+          {schedule.forEachEntry((meds, time) => (<ListItem>{time + meds.forEach((med) => " " + med.name)}</ListItem>))}
         </List>
       </Paper>
     );
@@ -133,34 +131,54 @@ class MedTimer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      timer: null,
-      counter: 0,
-      nextRound: {time: 0, meds: []},
+      currTime: new Date(),
     };
 
     this.tick = this.tick.bind(this);
   }
 
   componentDidMount() {
-    let timer = setInterval(this.tick, 1000);
-    this.setState({timer: timer});
+    this.timerId = setInterval(this.tick, 1000);
   }
 
   componentWillUnmount() {
-    this.clearInterval(this.state.timer);
+    this.clearInterval(this.timerId);
   }
 
   tick() {
-    this.setState({counter: this.state.counter + 1});
+    this.setState({currTime: new Date()});
   }
 
   render() {
-    return (
-      <Paper>
-        <h2>Timer</h2>
-        <div>{this.state.counter}</div>
-      </Paper>
-    );
+    let endTime = this.props.endDate.getTime();
+    var currTime = new Date().getTime();
+    
+    let timeRemaining = endTime - currTime;
+    
+    if(timeRemaining < 0)
+    {
+      return (
+        <Paper>
+          <h2>Timer</h2>
+          <div>"Time to take next dose!"</div>
+        </Paper>
+      );
+    }
+    else
+    {
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+      var hrs = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var mins = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+      var secs = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+      
+      return (
+        <Paper>
+          <h2>Timer</h2>
+          <div>{days + " days, " + hrs + " hours, " + mins + " min, " + secs + " seconds"}</div>
+        </Paper>
+      );
+    }
   }
 }
 
@@ -170,28 +188,32 @@ class MedOrg extends React.Component {
     this.state = {
       schedule: new Multimap(),
       meds: [],
+      nextDoseTime: null
     };
 
-    this.onMedsChange = this.onMedsChange.bind(this);
+    this.handleAddMed = this.handleAddMed.bind(this);
   }
 
-  onMedsChange(newMeds) {
-    //optionally, ensure that typedFunction is being called properly  -- here's a start:
-    if (!(newMeds instanceof Array)) throw Error('invalid argument: newMeds must be an array');
-
+  handleAddMed(name, dose, times) { 
+    let meds = this.state.meds
     let schedule = this.state.schedule;
-    schedule.clear(); 
-    newMeds.forEach((med) =>
+    meds.push({name: name, dose: dose, times: times});
+    
+    schedule = new Multimap();
+    
+    meds.forEach((med) =>
       med.times.forEach((time) =>
         schedule.set(med.time, {name: med.name, dose: med.dose})
       )
     );
-    this.setState({schedule: schedule});
+    
+    this.setState({meds: meds, schedule: schedule});
   }
 
   render() {
-    let schedule = this.state.schedule;
     let meds = this.state.meds;
+    let schedule = this.state.schedule;
+    let nextDose = this.state.nextDose;
 
     return (
       <MuiThemeProvider>
@@ -205,11 +227,11 @@ class MedOrg extends React.Component {
             </Col>
 
             <Col xs>
-              <MedTimer schedule={schedule} />
+              <MedTimer endDat=e{new Date('December 1, 2019 12:00:00')} />
             </Col>
 
             <Col xs>
-              <MedList meds={meds} onMedsChange={this.onMedsChange}/>
+              <MedList meds={meds} onAddMed={this.handleAddMed}/>
             </Col>
           </Row>
         </Grid>
