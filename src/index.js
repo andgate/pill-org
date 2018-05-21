@@ -6,7 +6,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import AppBar from 'material-ui/AppBar';
 import Dialog from 'material-ui/Dialog';
-import {List, ListItem} from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
@@ -56,15 +56,15 @@ class MedList extends React.Component {
 
   toggleAddPill = () => {
     this.setState({addPillVisible: !this.state.addPillVisible});
-  };
+  }
 
   openAddPill = () => {
     this.setState({addPillVisible: true});
-  };
+  }
 
   closeAddPill = () => {
     this.setState({addPillVisible: false});
-  };
+  }
 
   saveAddPill = (event) => {
     event.preventDefault();
@@ -119,9 +119,7 @@ class MedSchedule extends React.Component {
 
     return (
       <Paper>
-        <div className="clearfix">
-              <span style={{ "lineHeight": "36px" }}>Schedule</span>
-        </div>
+        <h2>Schedule</h2>
         <List>
         {schedule.forEachEntry((meds, time) => (<ListItem>{time + " " + meds}</ListItem>))}
         </List>
@@ -159,10 +157,8 @@ class MedTimer extends React.Component {
   render() {
     return (
       <Paper>
-        <div className="clearfix">
-            <span style={{ "lineHeight": "36px" }}>Timer</span>
-        </div>
-        <div className="text item">{this.state.counter}</div>
+        <h2>Timer</h2>
+        <div>{this.state.counter}</div>
       </Paper>
     );
   }
