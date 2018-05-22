@@ -29,9 +29,6 @@ import ImageEdit from 'material-ui/svg-icons/image/edit';
 // For responsive-ui
 import MediaQuery from 'react-responsive';
 
-var Multimap = require('multimap'); /* docs: https://github.com/villadora/multi-map */
-
-
 
 var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: new Date()}
                   , {name: "Adderall", dose: "30", units: "mg", time: new Date()}
@@ -41,109 +38,102 @@ var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: new Date()
 var acceptedUnits = ["mg", "g", "kg"];
 
 
-class MedList extends React.Component {
+class AddMedDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      addPillVisible: false,
       selectedUnit: 1,
-      pillEdit: {name: "", dose: 0, units: "mg", time: new Date()},
+      med: {name: "", dose: 0, units: "mg", time: null}
     };
 
-    this.onChangeName = this.onChangeName.bind(this);
-    this.onChangeDose = this.onChangeDose.bind(this);
-    this.onChangeTime = this.onChangeTime.bind(this);
+    this.handleChangeName = this.handleChangeName.bind(this);
+    this.handleChangeDose = this.handleChangeDose.bind(this);
+    this.handleChangeUnits = this.handleChangeUnits.bind(this);
+    this.handleChangeTime = this.handleChangeTime.bind(this);
 
-    this.toggleAddPill = this.toggleAddPill.bind(this);
-    this.openAddPill = this.openAddPill.bind(this);
-    this.closeAddPill = this.closeAddPill.bind(this);
-    this.saveAddPill = this.saveAddPill.bind(this);
+    this.handleOpenDialog = this.handleOpenDialog.bind(this);
+    this.handleCancelDialog = this.handleCancelDialog.bind(this);
+    this.handleSubmitDialog = this.handleSubmitDialog.bind(this);
   }
 
 
-  onChangeName = (event) => {
-    let pillEdit = this.state.pillEdit;
-    pillEdit.name = event.target.value;
-    this.setState({ pillEdit: pillEdit });
+  handleChangeName = (event) => {
+    let med = this.state.med;
+    med.name = event.target.value;
+    this.setState({ med: med });
   }
 
-  onChangeDose = (event) => {
-    let pillEdit = this.state.pillEdit;
-    pillEdit.dose = event.target.value;
-    this.setState({ pillEdit: pillEdit });
+  handleChangeDose = (event) => {
+    let med = this.state.med;
+    med.dose = event.target.value;
+    this.setState({ med: med });
   }
   
-  handleUnitChange = (event, index, value) => {
-    let pillEdit = this.state.pillEdit;
-    pillEdit.units = acceptedUnits[index];
-    this.setState({ pillEdit: pillEdit, selectedUnit: value });
+  handleChangeUnits = (event, index, value) => {
+    let med = this.state.med;
+    med.units = acceptedUnits[index];
+    this.setState({ med: med, selectedUnit: value });
   }
 
-  onChangeTime = (event, time) => {
-    let pillEdit = this.state.pillEdit;
-    pillEdit.time = time;
-    this.setState({ pillEdit: pillEdit });
+  handleChangeTime = (event, time) => {
+    let med = this.state.med;
+    med.time = time;
+    this.setState({ med: med });
   }
 
-  toggleAddPill = () => {
-    this.setState({addPillVisible: !this.state.addPillVisible});
+
+  handleOpenDialog = () => {
+    this.setState({selectedUnit: 1, med: {name: "", dose: 0, units: "mg", time: null},});
+    this.props.onOpen();
   }
 
-  openAddPill = () => {
-    this.setState({addPillVisible: true, selectedUnit: 1, pillEdit: {name: "", dose: 0, units: "mg", time: null},});
+  handleCancelDialog = () => {
+    this.props.onCancel();
   }
 
-  closeAddPill = () => {
-    this.setState({addPillVisible: false, });
-  }
-
-  saveAddPill = (event) => {
+  handleSubmitDialog = (event) => {
     event.preventDefault();
-    let pillEdit = this.state.pillEdit;
-    this.props.onAddMed(pillEdit.name, pillEdit.dose, pillEdit.units, pillEdit.times);
-    this.closeAddPill();
+    let med = this.state.med;
+    
+    this.props.onCancel();
+    this.props.onSubmit(med);
   }
 
   render() {
-    const meds = this.props.meds;
+    const visible = this.props.visible;
 
     const actions = [
       <FlatButton
         label="Cancel"
         primary={true}
-        onClick={this.closeAddPill}
+        onClick={this.handleCancelDialog}
       />,
       <RaisedButton
         label="Add"
         primary={true}
         keyboardFocused={true}
-        onClick={this.saveAddPill}
+        onClick={this.handleSubmitDialog}
       />,
     ];
 
     return (
-      <Paper zDepth={2}>
-        <h2>
-          Medications
-          <IconButton onClick={this.openAddPill}><ContentAddCircle /></IconButton>
-        </h2>
         <Dialog
           title='Add Medication'
           actions={actions}
           modal={false}
-          open={this.state.addPillVisible}
-          onRequestClose={this.closeAddPill}
+          open={visible}
+          onRequestClose={this.handleCancelDialog}
         >
           <div>
-            <TextField hintText='Name' value={this.state.pillEdit.name} onChange={this.onChangeName} />
+            <TextField floatingLabelText="Name" hintText='Name' value={this.state.med.name} onChange={this.handleChangeName} />
           </div>
           
           <span>
-            <TextField hintText='Dose' value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
+            <TextField floatingLabelText="Dose" hintText='Dose' value={this.state.med.dose} onChange={this.handleChangeDose} />
             <SelectField
               floatingLabelText="units"
               value={this.state.selectedUnit}
-              onChange={this.handleUnitChange}
+              onChange={this.handleChangeUnits}
             >
               <MenuItem value={1} primaryText="mg" />
               <MenuItem value={2} primaryText="g" />
@@ -152,9 +142,49 @@ class MedList extends React.Component {
           </span>
           
           <div>
-            <TimePicker hintText="12hr Format" value={this.state.pillEdit.times} onChange={this.onChangeTime} />
+            <TimePicker floatingLabelText="Time" hintText="Time" value={this.state.med.time} onChange={this.handleChangeTime} />
           </div>
         </Dialog>
+    );
+  }
+}
+
+class MedList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      addMedVisible: false,   
+    };
+  }
+
+  handleOpenAddMed = () => {
+    this.setState({addMedVisible: true, });
+  }
+
+  handleCancelAddMed = () => {
+    this.setState({addMedVisible: false, });
+  }
+
+  handleSubmitAddMed = (med) => {
+    this.props.onAddMed(med);
+  }
+
+  render() {
+    const meds = this.props.meds;
+    const addMedVisible = this.state.addMedVisible;
+
+    return (
+      <Paper zDepth={2}>
+        <h2>
+          Medications
+          <IconButton onClick={this.handleOpenAddMed}><ContentAddCircle /></IconButton>
+        </h2>
+        <AddMedDialog
+          visible={addMedVisible}
+          onOpen={this.handleOpenAddMed} 
+          onCancel={this.handleCancelAddMed}
+          onSubmit={this.handleSubmitAddMed}
+        />
 
         { meds.map( med => (
             <div>
@@ -248,17 +278,15 @@ class MedOrg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      schedule: new Multimap(),
       meds: exampleMeds,
-      nextDoseTime: null,
     };
 
     this.handleAddMed = this.handleAddMed.bind(this);
   }
 
-  handleAddMed(name, dose, units, time) {
+  handleAddMed(med) {
     this.setState((prevState) => ({
-        meds: prevState.meds.concat({name: name, dose: dose, units: units, time: time})
+        meds: prevState.meds.concat(med)
       }));
   }
 
