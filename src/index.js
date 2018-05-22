@@ -5,6 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import AppBar from 'material-ui/AppBar';
+import {Tabs, Tab} from 'material-ui/Tabs';
 import Dialog from 'material-ui/Dialog';
 import { List, ListItem } from 'material-ui/List';
 import FlatButton from 'material-ui/FlatButton';
@@ -12,6 +13,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
+
+// For responsive-ui
+import MediaQuery from 'react-responsive';
 
 var Multimap = require('multimap'); /* docs: https://github.com/villadora/multi-map */
 
@@ -192,7 +196,7 @@ class MedOrg extends React.Component {
     this.state = {
       schedule: new Multimap(),
       meds: [],
-      nextDoseTime: null
+      nextDoseTime: null,
     };
 
     this.handleAddMed = this.handleAddMed.bind(this);
@@ -209,24 +213,48 @@ class MedOrg extends React.Component {
 
     return (
       <MuiThemeProvider>
-        <Grid fluid>
-          <Row>
-            <AppBar title="Med Organizer" />
-          </Row>
-          <Row>
-            <Col xs>
-              <MedSchedule meds={meds} />
-            </Col>
+        <div>
 
-            <Col xs>
-              <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
-            </Col>
+          <MediaQuery minDeviceWidth={1224}>
+            <Grid fluid>
+              <Row>
+                <AppBar title="Med Organizer" />
+              </Row>
+              <Row>
+                <Col xs>
+                  <MedSchedule meds={meds} />
+                </Col>
 
-            <Col xs>
-              <MedList meds={meds} onAddMed={this.handleAddMed}/>
-            </Col>
-          </Row>
-        </Grid>
+                <Col xs>
+                  <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
+                </Col>
+
+                <Col xs>
+                  <MedList meds={meds} onAddMed={this.handleAddMed}/>
+                </Col>
+              </Row>
+            </Grid>
+          </MediaQuery>
+
+          <MediaQuery maxDeviceWidth={1224}>
+            <Tabs>
+              
+              <Tab label="Schedule">
+                <MedSchedule meds={meds} />
+              </Tab>
+              
+              <Tab label="Timer">
+                <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
+              </Tab>
+              
+              <Tab label="Meds">
+                <MedList meds={meds} onAddMed={this.handleAddMed}/>
+              </Tab>
+            
+            </Tabs>
+          </MediaQuery>
+        
+        </div>
       </MuiThemeProvider>
     );
   }
