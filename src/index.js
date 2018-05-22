@@ -8,9 +8,16 @@ import AppBar from 'material-ui/AppBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Dialog from 'material-ui/Dialog';
 import { List, ListItem } from 'material-ui/List';
+
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+
 import Paper from 'material-ui/Paper';
+import Divider from 'material-ui/Divider';
+
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
 
@@ -31,13 +38,16 @@ var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: new Date()
                   , {name: "Benedryl", dose: "25", units: "mg", time: new Date()}
                   ];
 
+var acceptedUnits = ["mg", "g", "kg"];
+
 
 class MedList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       addPillVisible: false,
-      pillEdit: {name: "", dose: 0, time: new Date()},
+      selectedUnit: 1,
+      pillEdit: {name: "", dose: 0, units: "mg", time: new Date()},
     };
 
     this.onChangeName = this.onChangeName.bind(this);
@@ -62,6 +72,12 @@ class MedList extends React.Component {
     pillEdit.dose = event.target.value;
     this.setState({ pillEdit: pillEdit });
   }
+  
+  handleUnitChange = (event, index, value) => {
+    let pillEdit = this.state.pillEdit;
+    pillEdit.units = acceptedUnits[index];
+    this.setState({ pillEdit: pillEdit, selectedUnit: value });
+  }
 
   onChangeTime = (event, time) => {
     let pillEdit = this.state.pillEdit;
@@ -74,24 +90,22 @@ class MedList extends React.Component {
   }
 
   openAddPill = () => {
-    this.setState({addPillVisible: true});
+    this.setState({addPillVisible: true, selectedUnit: 1, pillEdit: {name: "", dose: 0, units: "mg", time: null},});
   }
 
   closeAddPill = () => {
-    this.setState({addPillVisible: false, pillEdit: {name: "", dose: 0, times: null},});
+    this.setState({addPillVisible: false, });
   }
 
   saveAddPill = (event) => {
     event.preventDefault();
     let pillEdit = this.state.pillEdit;
-    this.props.onAddMed(pillEdit.name, pillEdit.dose, pillEdit.times);
+    this.props.onAddMed(pillEdit.name, pillEdit.dose, pillEdit.units, pillEdit.times);
     this.closeAddPill();
   }
 
   render() {
     const meds = this.props.meds;
-
-
 
     const actions = [
       <FlatButton
@@ -99,7 +113,7 @@ class MedList extends React.Component {
         primary={true}
         onClick={this.closeAddPill}
       />,
-      <FlatButton
+      <RaisedButton
         label="Add"
         primary={true}
         keyboardFocused={true}
@@ -108,7 +122,7 @@ class MedList extends React.Component {
     ];
 
     return (
-      <Paper>
+      <Paper zDepth={2}>
         <h2>
           Medications
           <IconButton onClick={this.openAddPill}><ContentAddCircle /></IconButton>
@@ -124,29 +138,32 @@ class MedList extends React.Component {
             <TextField hintText='Name' value={this.state.pillEdit.name} onChange={this.onChangeName} />
           </div>
           
-          <div>
+          <span>
             <TextField hintText='Dose' value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
-          </div>
+            <SelectField
+              floatingLabelText="units"
+              value={this.state.selectedUnit}
+              onChange={this.handleUnitChange}
+            >
+              <MenuItem value={1} primaryText="mg" />
+              <MenuItem value={2} primaryText="g" />
+              <MenuItem value={3} primaryText="kg" />
+            </SelectField>
+          </span>
           
           <div>
             <TimePicker hintText="12hr Format" value={this.state.pillEdit.times} onChange={this.onChangeTime} />
           </div>
         </Dialog>
 
-        <List>
-          { meds.map( med => (
-            <ListItem>
-              <span>
-                <div>
-                {med.name + " " + med.dose + "mg " + med.times}
-                <IconButton><ActionDelete /></IconButton>
-                <IconButton><ImageEdit /></IconButton>
-                </div>
-              </span>
-            </ListItem>
-          ))}
-
-        </List>
+        { meds.map( med => (
+            <div>
+              {med.name + " " + med.dose + med.units + " " + med.time}
+              <IconButton><ActionDelete /></IconButton>
+              <IconButton><ImageEdit /></IconButton>
+              <Divider />
+            </div>
+        ))}
       </Paper>
     );
   }
@@ -161,7 +178,7 @@ class MedSchedule extends React.Component {
     let meds = this.props.meds;
 
     return (
-      <Paper>
+      <Paper zDepth={2}>
         <h2>Schedule</h2>
         <List>
           {meds.map((med) => <ListItem>{med.time + " " + med.name}</ListItem>)}
@@ -218,7 +235,7 @@ class MedTimer extends React.Component {
       var secs = Math.floor((timeRemaining % (1000 * 60)) / 1000);
       
       return (
-        <Paper>
+        <Paper zDepth={2}>
           <h2>Timer</h2>
           <div>{days + " days, " + hrs + " hours, " + mins + " min, " + secs + " seconds"}</div>
         </Paper>
@@ -239,9 +256,9 @@ class MedOrg extends React.Component {
     this.handleAddMed = this.handleAddMed.bind(this);
   }
 
-  handleAddMed(name, dose, time) {
+  handleAddMed(name, dose, units, time) {
     this.setState((prevState) => ({
-        meds: prevState.meds.concat({name: name, dose: dose, time: time})
+        meds: prevState.meds.concat({name: name, dose: dose, units: units, time: time})
       }));
   }
 
