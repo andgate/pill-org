@@ -14,10 +14,22 @@ import Paper from 'material-ui/Paper';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
 
+import IconButton from 'material-ui/IconButton';
+import ContentAddCircle from 'material-ui/svg-icons/content/add-circle';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
+import ImageEdit from 'material-ui/svg-icons/image/edit';
+
 // For responsive-ui
 import MediaQuery from 'react-responsive';
 
 var Multimap = require('multimap'); /* docs: https://github.com/villadora/multi-map */
+
+
+
+var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: new Date()}
+                  , {name: "Adderall", dose: "30", units: "mg", time: new Date()}
+                  , {name: "Benedryl", dose: "25", units: "mg", time: new Date()}
+                  ];
 
 
 class MedList extends React.Component {
@@ -79,6 +91,8 @@ class MedList extends React.Component {
   render() {
     const meds = this.props.meds;
 
+
+
     const actions = [
       <FlatButton
         label="Cancel"
@@ -95,8 +109,10 @@ class MedList extends React.Component {
 
     return (
       <Paper>
-        <h2>Medications</h2>
-        <RaisedButton label='ADD' primary={true} onClick={this.openAddPill} />
+        <h2>
+          Medications
+          <IconButton onClick={this.openAddPill}><ContentAddCircle /></IconButton>
+        </h2>
         <Dialog
           title='Add Medication'
           actions={actions}
@@ -104,12 +120,33 @@ class MedList extends React.Component {
           open={this.state.addPillVisible}
           onRequestClose={this.closeAddPill}
         >
-          <TextField hintText='Name' value={this.state.pillEdit.name} onChange={this.onChangeName} />
-          <TextField hintText='Dose' value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
-          <TimePicker hintText="12hr Format" value={this.state.pillEdit.times} onChange={this.onChangeTime} />
+          <div>
+            <TextField hintText='Name' value={this.state.pillEdit.name} onChange={this.onChangeName} />
+          </div>
+          
+          <div>
+            <TextField hintText='Dose' value={this.state.pillEdit.dose} onChange={this.onChangeDose} />
+          </div>
+          
+          <div>
+            <TimePicker hintText="12hr Format" value={this.state.pillEdit.times} onChange={this.onChangeTime} />
+          </div>
         </Dialog>
 
-        {meds.map(med => (<div>{med.name + " " + med.dose + "mg " + med.times}</div>))}
+        <List>
+          { meds.map( med => (
+            <ListItem>
+              <span>
+                <div>
+                {med.name + " " + med.dose + "mg " + med.times}
+                <IconButton><ActionDelete /></IconButton>
+                <IconButton><ImageEdit /></IconButton>
+                </div>
+              </span>
+            </ListItem>
+          ))}
+
+        </List>
       </Paper>
     );
   }
@@ -195,7 +232,7 @@ class MedOrg extends React.Component {
     super(props);
     this.state = {
       schedule: new Multimap(),
-      meds: [],
+      meds: exampleMeds,
       nextDoseTime: null,
     };
 
@@ -237,21 +274,21 @@ class MedOrg extends React.Component {
           </MediaQuery>
 
           <MediaQuery maxDeviceWidth={1224}>
-            <Tabs>
+              <Tabs>
+                
+                <Tab label="Schedule">
+                  <MedSchedule meds={meds} />
+                </Tab>
+                
+                <Tab label="Timer">
+                  <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
+                </Tab>
+                
+                <Tab label="Meds">
+                  <MedList meds={meds} onAddMed={this.handleAddMed}/>
+                </Tab>
               
-              <Tab label="Schedule">
-                <MedSchedule meds={meds} />
-              </Tab>
-              
-              <Tab label="Timer">
-                <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
-              </Tab>
-              
-              <Tab label="Meds">
-                <MedList meds={meds} onAddMed={this.handleAddMed}/>
-              </Tab>
-            
-            </Tabs>
+              </Tabs>
           </MediaQuery>
         
         </div>
