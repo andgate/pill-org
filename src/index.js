@@ -29,6 +29,9 @@ import ImageEdit from 'material-ui/svg-icons/image/edit';
 // For responsive-ui
 import MediaQuery from 'react-responsive';
 
+// For validating react textfields
+import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+
 
 var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: new Date()}
                   , {name: "Adderall", dose: "30", units: "mg", time: new Date()}
@@ -43,7 +46,11 @@ class AddMedDialog extends React.Component {
     super(props);
     this.state = {
       selectedUnit: 1,
-      med: {name: "", dose: 0, units: "mg", time: null}
+      med: {name: "", dose: 0, units: "mg", time: null},
+      doseErrorText: '',
+      isNameValid: false,
+      isDoseValid: false,
+      isTimeValid: false,
     };
 
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -64,9 +71,16 @@ class AddMedDialog extends React.Component {
   }
 
   handleChangeDose = (event) => {
-    let med = this.state.med;
-    med.dose = event.target.value;
-    this.setState({ med: med });
+    if(event.target.value.isInteger())
+    {
+      let med = this.state.med;
+      med.dose = event.target.value;
+      this.setState({ med: med, doseErrorText: '' });
+    }
+    else
+    {
+      this.setState({ doseErrorText: 'must be a positive whole number' });
+    }
   }
   
   handleChangeUnits = (event, index, value) => {
@@ -94,13 +108,17 @@ class AddMedDialog extends React.Component {
   handleSubmitDialog = (event) => {
     event.preventDefault();
     let med = this.state.med;
-    
+
     this.props.onCancel();
     this.props.onSubmit(med);
   }
 
   render() {
     const visible = this.props.visible;
+
+    const med = this.state.med;
+    const selectedUnit = this.state.selectedUnit;
+    let submitDisabled = med.name === '';
 
     const actions = [
       <FlatButton
@@ -111,7 +129,7 @@ class AddMedDialog extends React.Component {
       <RaisedButton
         label="Add"
         primary={true}
-        keyboardFocused={true}
+        disabled={submitDisabled}
         onClick={this.handleSubmitDialog}
       />,
     ];
@@ -124,26 +142,34 @@ class AddMedDialog extends React.Component {
           open={visible}
           onRequestClose={this.handleCancelDialog}
         >
-          <div>
-            <TextField floatingLabelText="Name" hintText='Name' value={this.state.med.name} onChange={this.handleChangeName} />
-          </div>
-          
-          <span>
+          <ValidatorForm
+                ref="form"
+                onSubmit={this.handleSubmit}
+                onError={errors => console.log(errors)}
+          >
+            <TextValidator
+              floatingLabelText="Name"
+              hintText='Name'
+              onChange={this.handleChangeName}
+              name="Name"
+              value={this.state.med.name}
+              validators={['required']}
+              errorMessages={['this field is required']}
+            />
+            
             <TextField floatingLabelText="Dose" hintText='Dose' value={this.state.med.dose} onChange={this.handleChangeDose} />
             <SelectField
               floatingLabelText="units"
-              value={this.state.selectedUnit}
+              value={selectedUnit}
               onChange={this.handleChangeUnits}
             >
               <MenuItem value={1} primaryText="mg" />
               <MenuItem value={2} primaryText="g" />
               <MenuItem value={3} primaryText="kg" />
             </SelectField>
-          </span>
-          
-          <div>
+            
             <TimePicker floatingLabelText="Time" hintText="Time" value={this.state.med.time} onChange={this.handleChangeTime} />
-          </div>
+          </ValidatorForm>
         </Dialog>
     );
   }
@@ -186,14 +212,22 @@ class MedList extends React.Component {
           onSubmit={this.handleSubmitAddMed}
         />
 
-        { meds.map( med => (
-            <div>
-              {med.name + " " + med.dose + med.units + " " + med.time}
-              <IconButton><ActionDelete /></IconButton>
-              <IconButton><ImageEdit /></IconButton>
-              <Divider />
-            </div>
-        ))}
+        <Grid>
+          { meds.map( med => (
+              <Row>
+                <Col xs={12} sm={6} md={2} lg={1}>
+                  {med.name + " " + med.dose + med.units + " " + med.time}
+                </Col>
+                <Col xs>
+                  <IconButton><ActionDelete /></IconButton>
+                </Col>
+                <Col xs>
+                  <IconButton><ImageEdit /></IconButton>
+                </Col>
+                <Divider />
+              </Row>
+          ))}
+        </Grid>
       </Paper>
     );
   }
