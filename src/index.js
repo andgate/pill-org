@@ -85,16 +85,9 @@ class AddMedDialog extends React.Component {
   }
 
   handleChangeDose = (event) => {
-    if(event.target.value.isInteger())
-    {
-      let med = this.state.med;
-      med.dose = event.target.value;
-      this.setState({ med: med, doseErrorText: '' });
-    }
-    else
-    {
-      this.setState({ doseErrorText: 'must be a positive whole number' });
-    }
+    let med = this.state.med;
+    med.dose = event.target.value;
+    this.setState({ med: med, doseErrorText: '' });
   }
   
   handleChangeUnits = (event, index, value) => {
@@ -121,7 +114,8 @@ class AddMedDialog extends React.Component {
 
   handleSubmitDialog = (event) => {
     event.preventDefault();
-    let med = this.state.med;
+    // Deep copy our med
+    let med = JSON.parse(JSON.stringify(this.state.med));
 
     this.props.onCancel();
     this.props.onSubmit(med);
@@ -132,7 +126,6 @@ class AddMedDialog extends React.Component {
 
     const med = this.state.med;
     const selectedUnit = this.state.selectedUnit;
-    let submitDisabled = med.name === '';
 
     const actions = [
       <FlatButton
@@ -143,7 +136,7 @@ class AddMedDialog extends React.Component {
       <RaisedButton
         label="Add"
         primary={true}
-        disabled={submitDisabled}
+        disabled={false}
         onClick={this.handleSubmitDialog}
       />,
     ];
@@ -166,12 +159,12 @@ class AddMedDialog extends React.Component {
               hintText='Name'
               onChange={this.handleChangeName}
               name="Name"
-              value={this.state.med.name}
+              value={med.name}
               validators={['required']}
               errorMessages={['this field is required']}
             />
             
-            <TextField floatingLabelText="Dose" hintText='Dose' value={this.state.med.dose} onChange={this.handleChangeDose} />
+            <TextField floatingLabelText="Dose" hintText='Dose' value={med.dose} onChange={this.handleChangeDose} />
             <SelectField
               floatingLabelText="units"
               value={selectedUnit}
@@ -182,7 +175,7 @@ class AddMedDialog extends React.Component {
               <MenuItem value={3} primaryText="kg" />
             </SelectField>
             
-            <TimePicker floatingLabelText="Time" hintText="Time" value={this.state.med.time} onChange={this.handleChangeTime} />
+            <TimePicker floatingLabelText="Time" hintText="Time" value={med.time} onChange={this.handleChangeTime} />
           </ValidatorForm>
         </Dialog>
     );
