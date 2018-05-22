@@ -27,6 +27,8 @@ import ContentAddCircle from 'material-ui/svg-icons/content/add-circle';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ImageEdit from 'material-ui/svg-icons/image/edit';
 
+import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+
 // For responsive-ui
 import MediaQuery from 'react-responsive';
 
@@ -35,13 +37,13 @@ import MediaQuery from 'react-responsive';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 
 import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
+    Table,
+    TableBody,
+    TableHeader,
+    TableHeaderColumn,
+    TableRow,
+    TableRowColumn,
+  } from 'material-ui/Table';
 
 
 var moment = require('moment');
@@ -175,7 +177,7 @@ class AddMedDialog extends React.Component {
               <MenuItem value={3} primaryText="kg" />
             </SelectField>
             
-            <TimePicker floatingLabelText="Time" hintText="Time" value={med.time} onChange={this.handleChangeTime} />
+            <TimePicker floatingLabelText="Time" hintText="Time" value={new Date(med.time)} onChange={this.handleChangeTime} />
           </ValidatorForm>
         </Dialog>
     );
@@ -240,7 +242,7 @@ class MedList extends React.Component {
                     {med.dose + med.units}
                   </TableRowColumn>
                   <TableRowColumn>
-                    {moment(med.time).format("h:mm:ss a")}
+                    {moment(med.time).format("h:mm a")}
                   </TableRowColumn>
                   <Divider />
                 </TableRow>
@@ -278,7 +280,7 @@ class MedSchedule extends React.Component {
                 <TableRow>
                   <TableRowColumn>{med.name}</TableRowColumn>
                   <TableRowColumn>
-                    {moment(med.time).format("h:mm:ss a")}
+                    {moment(med.time).format("h:mm a")}
                   </TableRowColumn>
                 </TableRow>
             )}
@@ -360,45 +362,19 @@ class MedOrg extends React.Component {
       <MuiThemeProvider>
         <div>
 
-          <MediaQuery minDeviceWidth={1224}>
-            <Grid fluid>
-              <Row>
-                <AppBar title="Med Organizer" />
-              </Row>
-              <Row>
-                <Col>
-                  <MedSchedule meds={meds} />
-                </Col>
-
-                <Col>
-                  <MedTimer meds={meds} endTime={moment('December 1, 2019 12:00:00')} />
-                </Col>
-
-                <Col>
-                  <MedList meds={meds} onAddMed={this.handleAddMed}/>
-                </Col>
-              </Row>
-            </Grid>
-          </MediaQuery>
-
-          <MediaQuery maxDeviceWidth={1224}>
-              <Tabs>
-                
-                <Tab label="Schedule">
-                  <MedSchedule meds={meds} />
-                </Tab>
-                
-                <Tab label="Timer">
-                  <MedTimer meds={meds} endTime={moment('December 1, 2019 12:00:00')} />
-                </Tab>
-                
-                <Tab label="Meds">
-                  <MedList meds={meds} onAddMed={this.handleAddMed}/>
-                </Tab>
+          <AppBar title="Med Organizer" />
+          <Tabs>
               
-              </Tabs>
-          </MediaQuery>
-        
+              <Tab label="Schedule">
+                <MedSchedule meds={meds} />
+              </Tab>
+              
+              <Tab label="Meds">
+                <MedList meds={meds} onAddMed={this.handleAddMed}/>
+              </Tab>
+            
+          </Tabs>
+      
         </div>
       </MuiThemeProvider>
     );
