@@ -21,12 +21,12 @@ class MedList extends React.Component {
     super(props);
     this.state = {
       addPillVisible: false,
-      pillEdit: {name: "", dose: 0, times: []},
+      pillEdit: {name: "", dose: 0, time: new Date()},
     };
 
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeDose = this.onChangeDose.bind(this);
-    this.onChangeTimes = this.onChangeTimes.bind(this);
+    this.onChangeTime = this.onChangeTime.bind(this);
 
     this.toggleAddPill = this.toggleAddPill.bind(this);
     this.openAddPill = this.openAddPill.bind(this);
@@ -47,9 +47,9 @@ class MedList extends React.Component {
     this.setState({ pillEdit: pillEdit });
   }
 
-  onChangeTimes = (event, time) => {
+  onChangeTime = (event, time) => {
     let pillEdit = this.state.pillEdit;
-    pillEdit.times = [time];
+    pillEdit.time = time;
     this.setState({ pillEdit: pillEdit });
   }
 
@@ -62,7 +62,7 @@ class MedList extends React.Component {
   }
 
   closeAddPill = () => {
-    this.setState({addPillVisible: false, pillEdit: {name: "", dose: 0, times: [0]},});
+    this.setState({addPillVisible: false, pillEdit: {name: "", dose: 0, times: null},});
   }
 
   saveAddPill = (event) => {
@@ -92,7 +92,7 @@ class MedList extends React.Component {
     return (
       <Paper>
         <h2>Medications</h2>
-        <RaisedButton label='Add' onClick={this.openAddPill} />
+        <RaisedButton label='ADD' primary={true} onClick={this.openAddPill} />
         <Dialog
           title='Add Medication'
           actions={actions}
@@ -112,14 +112,18 @@ class MedList extends React.Component {
 }
 
 class MedSchedule extends React.Component {
+  /*constructor(props) {
+    super(props);
+  }*/
+
   render() {
-    let schedule = this.props.schedule;
+    let meds = this.props.meds;
 
     return (
       <Paper>
         <h2>Schedule</h2>
         <List>
-          {schedule.forEachEntry((meds, time) => (<ListItem>{time + meds.forEach((med) => " " + med.name)}</ListItem>))}
+          {meds.map((med) => <ListItem>{med.time + " " + med.name}</ListItem>)}
         </List>
       </Paper>
     );
@@ -142,7 +146,7 @@ class MedTimer extends React.Component {
   }
 
   componentWillUnmount() {
-    this.clearInterval(this.timerId);
+    clearInterval(this.timerId);
   }
 
   tick() {
@@ -194,26 +198,14 @@ class MedOrg extends React.Component {
     this.handleAddMed = this.handleAddMed.bind(this);
   }
 
-  handleAddMed(name, dose, times) { 
-    let meds = this.state.meds
-    let schedule = this.state.schedule;
-    meds.push({name: name, dose: dose, times: times});
-    
-    schedule = new Multimap();
-    
-    meds.forEach((med) =>
-      med.times.forEach((time) =>
-        schedule.set(med.time, {name: med.name, dose: med.dose})
-      )
-    );
-    
-    this.setState({meds: meds, schedule: schedule});
+  handleAddMed(name, dose, time) {
+    this.setState((prevState) => ({
+        meds: prevState.meds.concat({name: name, dose: dose, time: time})
+      }));
   }
 
   render() {
     let meds = this.state.meds;
-    let schedule = this.state.schedule;
-    let nextDose = this.state.nextDose;
 
     return (
       <MuiThemeProvider>
@@ -223,11 +215,11 @@ class MedOrg extends React.Component {
           </Row>
           <Row>
             <Col xs>
-              <MedSchedule schedule={schedule} />
+              <MedSchedule meds={meds} />
             </Col>
 
             <Col xs>
-              <MedTimer endDate={new Date('December 1, 2019 12:00:00')} />
+              <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
             </Col>
 
             <Col xs>
