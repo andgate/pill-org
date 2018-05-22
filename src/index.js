@@ -14,6 +14,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import Paper from 'material-ui/Paper';
 import Divider from 'material-ui/Divider';
+import Subheader from 'material-ui/Subheader';
 
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -29,13 +30,26 @@ import ImageEdit from 'material-ui/svg-icons/image/edit';
 // For responsive-ui
 import MediaQuery from 'react-responsive';
 
+
 // For validating react textfields
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 
-var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: new Date()}
-                  , {name: "Adderall", dose: "30", units: "mg", time: new Date()}
-                  , {name: "Benedryl", dose: "25", units: "mg", time: new Date()}
+
+var moment = require('moment');
+
+
+var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: moment().format()}
+                  , {name: "Adderall", dose: "30", units: "mg", time: moment().format()}
+                  , {name: "Benedryl", dose: "25", units: "mg", time: moment().format()}
                   ];
 
 var acceptedUnits = ["mg", "g", "kg"];
@@ -91,7 +105,7 @@ class AddMedDialog extends React.Component {
 
   handleChangeTime = (event, time) => {
     let med = this.state.med;
-    med.time = time;
+    med.time = moment(time);
     this.setState({ med: med });
   }
 
@@ -201,10 +215,10 @@ class MedList extends React.Component {
 
     return (
       <Paper zDepth={2}>
-        <h2>
+        <Subheader>
           Medications
           <IconButton onClick={this.handleOpenAddMed}><ContentAddCircle /></IconButton>
-        </h2>
+        </Subheader>
         <AddMedDialog
           visible={addMedVisible}
           onOpen={this.handleOpenAddMed} 
@@ -212,22 +226,34 @@ class MedList extends React.Component {
           onSubmit={this.handleSubmitAddMed}
         />
 
-        <Grid>
-          { meds.map( med => (
-              <Row>
-                <Col xs={12} sm={6} md={2} lg={1}>
-                  {med.name + " " + med.dose + med.units + " " + med.time}
-                </Col>
-                <Col xs>
-                  <IconButton><ActionDelete /></IconButton>
-                </Col>
-                <Col xs>
-                  <IconButton><ImageEdit /></IconButton>
-                </Col>
-                <Divider />
-              </Row>
-          ))}
-        </Grid>
+        <Table>
+          <TableHeader
+            displaySelectAll={false}
+            adjustForCheckbox={false}
+          >
+            <TableRow>
+              <TableHeaderColumn>Name</TableHeaderColumn>
+              <TableHeaderColumn>Dose</TableHeaderColumn>
+              <TableHeaderColumn>Time</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody displayRowCheckbox={false}>
+            { meds.map( med => (
+                <TableRow>
+                  <TableRowColumn>
+                    {med.name}
+                  </TableRowColumn>
+                  <TableRowColumn>
+                    {med.dose + med.units}
+                  </TableRowColumn>
+                  <TableRowColumn>
+                    {moment(med.time).format("h:mm:ss a")}
+                  </TableRowColumn>
+                  <Divider />
+                </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </Paper>
     );
   }
@@ -243,10 +269,28 @@ class MedSchedule extends React.Component {
 
     return (
       <Paper zDepth={2}>
-        <h2>Schedule</h2>
-        <List>
-          {meds.map((med) => <ListItem>{med.time + " " + med.name}</ListItem>)}
-        </List>
+        <Subheader>Schedule</Subheader>
+        <Table>
+          <TableHeader
+            displaySelectAll={false}
+            adjustForCheckbox={false}
+          >
+            <TableRow>
+              <TableHeaderColumn>Name</TableHeaderColumn>
+              <TableHeaderColumn>Time</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody displayRowCheckbox={false}>
+            { meds.map((med) =>
+                <TableRow>
+                  <TableRowColumn>{med.name}</TableRowColumn>
+                  <TableRowColumn>
+                    {moment(med.time).format("h:mm:ss a")}
+                  </TableRowColumn>
+                </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </Paper>
     );
   }
@@ -257,7 +301,7 @@ class MedTimer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currTime: new Date(),
+      currTime: moment(),
     };
 
     this.tick = this.tick.bind(this);
@@ -272,36 +316,28 @@ class MedTimer extends React.Component {
   }
 
   tick() {
-    this.setState({currTime: new Date()});
+    this.setState({currTime: moment()});
   }
 
   render() {
-    let endTime = this.props.endDate.getTime();
-    var currTime = new Date().getTime();
-    
-    let timeRemaining = endTime - currTime;
-    
-    if(timeRemaining < 0)
+    let endTime = this.props.endTime;
+    let currTime = this.state.currTime;
+
+    if(endTime < currTime)
     {
       return (
-        <Paper>
-          <h2>Timer</h2>
+        <Paper zDepth={2}>
+          <Subheader>Timer</Subheader>
           <div>"Time to take next dose!"</div>
         </Paper>
       );
     }
     else
-    {
-      // Time calculations for days, hours, minutes and seconds
-      var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-      var hrs = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var mins = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-      var secs = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-      
+    { 
       return (
         <Paper zDepth={2}>
-          <h2>Timer</h2>
-          <div>{days + " days, " + hrs + " hours, " + mins + " min, " + secs + " seconds"}</div>
+          <Subheader>Timer</Subheader>
+          <div>{currTime.to(endTime)}</div>
         </Paper>
       );
     }
@@ -337,15 +373,15 @@ class MedOrg extends React.Component {
                 <AppBar title="Med Organizer" />
               </Row>
               <Row>
-                <Col xs>
+                <Col>
                   <MedSchedule meds={meds} />
                 </Col>
 
-                <Col xs>
-                  <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
+                <Col>
+                  <MedTimer meds={meds} endTime={moment('December 1, 2019 12:00:00')} />
                 </Col>
 
-                <Col xs>
+                <Col>
                   <MedList meds={meds} onAddMed={this.handleAddMed}/>
                 </Col>
               </Row>
@@ -360,7 +396,7 @@ class MedOrg extends React.Component {
                 </Tab>
                 
                 <Tab label="Timer">
-                  <MedTimer meds={meds} endDate={new Date('December 1, 2019 12:00:00')} />
+                  <MedTimer meds={meds} endTime={moment('December 1, 2019 12:00:00')} />
                 </Tab>
                 
                 <Tab label="Meds">
