@@ -62,8 +62,8 @@ class AddMedDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedUnit: 1,
-      med: {name: "", dose: 0, units: "mg", time: null},
+      selectedUnit: 2,
+      med: {name: "", dose: "", units: "mg", time: null},
       doseErrorText: '',
       isNameValid: false,
       isDoseValid: false,
@@ -107,7 +107,7 @@ class AddMedDialog extends React.Component {
 
 
   handleOpenDialog = () => {
-    this.setState({selectedUnit: 1, med: {name: "", dose: 0, units: "mg", time: null},});
+    this.setState({selectedUnit: 2, med: {name: "", dose: null, units: "mg", time: null},});
     this.props.onOpen();
   }
 
@@ -157,6 +157,7 @@ class AddMedDialog extends React.Component {
                 onSubmit={this.handleSubmit}
                 onError={errors => console.log(errors)}
           >
+            <div>
             <TextValidator
               floatingLabelText="Name"
               hintText='Name'
@@ -166,19 +167,27 @@ class AddMedDialog extends React.Component {
               validators={['required']}
               errorMessages={['this field is required']}
             />
+            </div>
             
+            <div>
             <TextField floatingLabelText="Dose" hintText='Dose' value={med.dose} onChange={this.handleChangeDose} />
+            </div>
+            
+            <div>
             <SelectField
               floatingLabelText="units"
               value={selectedUnit}
               onChange={this.handleChangeUnits}
             >
-              <MenuItem value={1} primaryText="mg" />
-              <MenuItem value={2} primaryText="g" />
-              <MenuItem value={3} primaryText="kg" />
+              <MenuItem value={1} primaryText="ug" />
+              <MenuItem value={2} primaryText="mg" />
+              <MenuItem value={3} primaryText="g" />
             </SelectField>
+            </div>
             
+            <div>
             <TimePicker floatingLabelText="Time" hintText="Time" value={new Date(med.time)} onChange={this.handleChangeTime} />
+            </div>
           </ValidatorForm>
         </Dialog>
     );
@@ -349,11 +358,12 @@ class MedOrg extends React.Component {
     super(props);
     this.state = {
       meds: exampleMeds,
-      schedule: ["xanax", "adderall", "benedryl"]
+      schedule: []
     };
 
     this.handleAddMed = this.handleAddMed.bind(this);
     this.handleTakeMed = this.handleTakeMed.bind(this);
+    this.addToSchedule = this.addToSchedule.bind(this);
     //this.tick = this.tick.bind(this);
   }
 
@@ -361,6 +371,8 @@ class MedOrg extends React.Component {
     this.setState((prevState) => ({
         meds: prevState.meds.concat(med)
       }));
+
+    this.scheduleMed(med);
   }
 
   handleTakeMed(index)
@@ -373,11 +385,7 @@ class MedOrg extends React.Component {
   componentDidMount() {
     //this.timerId = setInterval(this.tick, 1000);
     
-    /*
-    this.setState((prevState) => ({
-      schedule: prevState.schedule.filter((_, i) => i !== index)
-    }));
-    */
+    this.state.meds.forEach((med) => this.scheduleMed(med));
   }
 
   componentWillUnmount() {
@@ -386,13 +394,26 @@ class MedOrg extends React.Component {
 
   scheduleMed(med) {
     let now = moment();
-    let time = now.clone();
+    let time = med.time;
 
-    time.now();
+    let dur = moment.duration(moment(time).diff(now));
+
+    dur.days = 0;
+    dur.weeks = 0;
+    dur.months = 0;
+    dur.years = 0;
+
+    let msTill = dur.asMilliseconds();
+
+    console.log("Med scheduled in" + moment(dur).format())
+
+    setTimeout( (() => this.addToSchedule(med)) , msTill);
   }
 
   addToSchedule(med) {
-    //this.setState()
+    this.setState((prevState) => ({
+      schedule: prevState.schedule.concat(med.name)
+    }));
   }
 
   /*
@@ -427,7 +448,7 @@ class MedOrg extends React.Component {
       <MuiThemeProvider>
         <div>
 
-          <AppBar title="Med Organizer" />
+          <AppBar title="My Medications" />
 
           <MediaQuery minDeviceWidth={1224}>
             <Grid fluid>
