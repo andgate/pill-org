@@ -263,17 +263,13 @@ class MedList extends React.Component {
 class MedSchedule extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      addMedVisible: false,   
-    };
 
     this.handleTakeMed = this.handleTakeMed.bind(this);
   }
 
-  handleTakeMed(rowNumber, columnId)
+  handleTakeMed(index)
   {
-    console.log("Took med on row" + rowNumber);
-    this.onTakeMed(rowNumber-1);
+    this.props.onTakeMed(index);
   }
 
   render() {
@@ -283,10 +279,12 @@ class MedSchedule extends React.Component {
       <Paper zDepth={2}>
         <Subheader>Reminders</Subheader>
         <List>
-            { schedule.map((med) =>
+            { schedule.map((medName, index) =>
               <div>
-                <ListItem>
-                  <ActionCheckCircle />{med.name}
+                <ListItem
+                  onClick={(event) => this.handleTakeMed(index)}
+                >
+                  <ActionCheckCircle />{medName}
                 </ListItem>
                 <Divider />
               </div>
@@ -298,6 +296,7 @@ class MedSchedule extends React.Component {
 }
 
 
+/*
 class MedTimer extends React.Component {
   constructor(props) {
     super(props);
@@ -309,11 +308,11 @@ class MedTimer extends React.Component {
   }
 
   componentDidMount() {
-    this.timerId = setInterval(this.tick, 1000);
+    this.timerIds.push(setInterval(this.tick, 1000));
   }
 
   componentWillUnmount() {
-    clearInterval(this.timerId);
+    this.timerIds.forEach(clearInterval);
   }
 
   tick() {
@@ -343,19 +342,19 @@ class MedTimer extends React.Component {
       );
     }
   }
-}
+}*/
 
 class MedOrg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       meds: exampleMeds,
-      schedule: exampleMeds,
-      taken: []
+      schedule: ["xanax", "adderall", "benedryl"]
     };
 
     this.handleAddMed = this.handleAddMed.bind(this);
-    this.tick = this.tick.bind(this);
+    this.handleTakeMed = this.handleTakeMed.bind(this);
+    //this.tick = this.tick.bind(this);
   }
 
   handleAddMed(med) {
@@ -367,18 +366,36 @@ class MedOrg extends React.Component {
   handleTakeMed(index)
   {
     this.setState((prevState) => ({
-      schedule: [prevState.schedule.slice(0, index), ...prevState.schedule.slice(index+1)]
+      schedule: prevState.schedule.filter((_, i) => i !== index)
     }));
   }
 
   componentDidMount() {
-    this.timerId = setInterval(this.tick, 1000);
+    //this.timerId = setInterval(this.tick, 1000);
+    
+    /*
+    this.setState((prevState) => ({
+      schedule: prevState.schedule.filter((_, i) => i !== index)
+    }));
+    */
   }
 
   componentWillUnmount() {
-    clearInterval(this.timerId);
+    //clearInterval(this.timerId);
   }
 
+  scheduleMed(med) {
+    let now = moment();
+    let time = now.clone();
+
+    time.now();
+  }
+
+  addToSchedule(med) {
+    //this.setState()
+  }
+
+  /*
   tick() {
     // Is it time to take a med?
     // Add it to the schedule!
@@ -400,7 +417,7 @@ class MedOrg extends React.Component {
         schedule: prevState.schedule.concat(newSchedule)
       }));
     }
-  }
+  } */
 
   render() {
     let meds = this.state.meds;
