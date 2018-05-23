@@ -25,6 +25,7 @@ import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
 import ContentAddCircle from 'material-ui/svg-icons/content/add-circle';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
+import ActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
 import ImageEdit from 'material-ui/svg-icons/image/edit';
 
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
@@ -49,9 +50,9 @@ import {
 var moment = require('moment');
 
 
-var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: moment().format()}
-                  , {name: "Adderall", dose: "30", units: "mg", time: moment().format()}
-                  , {name: "Benedryl", dose: "25", units: "mg", time: moment().format()}
+var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: moment("10 am", "hh a").format()}
+                  , {name: "Adderall", dose: "30", units: "mg", time: moment("10 am", "hh a").format()}
+                  , {name: "Benedryl", dose: "25", units: "mg", time: moment("10:30 pm", "hh:mm a").format()}
                   ];
 
 var acceptedUnits = ["mg", "g", "kg"];
@@ -184,12 +185,17 @@ class AddMedDialog extends React.Component {
   }
 }
 
+
 class MedList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       addMedVisible: false,   
     };
+
+    this.handleOpenAddMed = this.handleOpenAddMed.bind(this);
+    this.handleCancelAddMed = this.handleCancelAddMed.bind(this);
+    this.handleSubmitAddMed = this.handleSubmitAddMed.bind(this);
   }
 
   handleOpenAddMed = () => {
@@ -255,37 +261,37 @@ class MedList extends React.Component {
 }
 
 class MedSchedule extends React.Component {
-  /*constructor(props) {
+  constructor(props) {
     super(props);
-  }*/
+    this.state = {
+      addMedVisible: false,   
+    };
+
+    this.handleTakeMed = this.handleTakeMed.bind(this);
+  }
+
+  handleTakeMed(rowNumber, columnId)
+  {
+    console.log("Took med on row" + rowNumber);
+    this.onTakeMed(rowNumber-1);
+  }
 
   render() {
-    let meds = this.props.meds;
+    let schedule = this.props.schedule;
 
     return (
       <Paper zDepth={2}>
-        <Subheader>Schedule</Subheader>
-        <Table>
-          <TableHeader
-            displaySelectAll={false}
-            adjustForCheckbox={false}
-          >
-            <TableRow>
-              <TableHeaderColumn>Name</TableHeaderColumn>
-              <TableHeaderColumn>Time</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody displayRowCheckbox={false}>
-            { meds.map((med) =>
-                <TableRow>
-                  <TableRowColumn>{med.name}</TableRowColumn>
-                  <TableRowColumn>
-                    {moment(med.time).format("h:mm a")}
-                  </TableRowColumn>
-                </TableRow>
+        <Subheader>Reminders</Subheader>
+        <List>
+            { schedule.map((med) =>
+              <div>
+                <ListItem>
+                  <ActionCheckCircle />{med.name}
+                </ListItem>
+                <Divider />
+              </div>
             )}
-          </TableBody>
-        </Table>
+        </List>
       </Paper>
     );
   }
@@ -344,9 +350,12 @@ class MedOrg extends React.Component {
     super(props);
     this.state = {
       meds: exampleMeds,
+      schedule: exampleMeds,
+      taken: []
     };
 
     this.handleAddMed = this.handleAddMed.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
   handleAddMed(med) {
@@ -355,25 +364,81 @@ class MedOrg extends React.Component {
       }));
   }
 
+  handleTakeMed(index)
+  {
+    this.setState((prevState) => ({
+      schedule: [prevState.schedule.slice(0, index), ...prevState.schedule.slice(index+1)]
+    }));
+  }
+
+  componentDidMount() {
+    this.timerId = setInterval(this.tick, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
+  tick() {
+    // Is it time to take a med?
+    // Add it to the schedule!
+    let meds = this.state.meds;
+    let taken = this.state.taken;
+
+    let currTime = moment();
+    let mins = moment(currTime).minutes();
+    let hrs = moment(currTime).hours();
+
+    // it is time to take a med when the current time exceeds a given time
+    let newSchedule = meds.filter((med) => {
+         (moment(med.time).minutes() === mins) 
+      && (moment(med.time).hours() === hrs) 
+    });
+
+    if(!newSchedule.length) {
+      this.setState((prevState) => ({
+        schedule: prevState.schedule.concat(newSchedule)
+      }));
+    }
+  }
+
   render() {
     let meds = this.state.meds;
+    let schedule = this.state.schedule;
 
     return (
       <MuiThemeProvider>
         <div>
 
           <AppBar title="Med Organizer" />
-          <Tabs>
+
+          <MediaQuery minDeviceWidth={1224}>
+            <Grid fluid>
+              <Row>
+                <Col xs>
+                  <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+                </Col>
+
+                <Col xs>
+                  <MedList meds={meds} onAddMed={this.handleAddMed}/>
+                </Col>
+              </Row>
+            </Grid>
+          </MediaQuery>
+
+          <MediaQuery maxDeviceWidth={1224}>
+            <Tabs>
+                
+                <Tab label="Reminders">
+                  <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+                </Tab>
+                
+                <Tab label="Medications">
+                  <MedList meds={meds} onAddMed={this.handleAddMed}/>
+                </Tab>
               
-              <Tab label="Schedule">
-                <MedSchedule meds={meds} />
-              </Tab>
-              
-              <Tab label="Meds">
-                <MedList meds={meds} onAddMed={this.handleAddMed}/>
-              </Tab>
-            
-          </Tabs>
+            </Tabs>
+          </MediaQuery>
       
         </div>
       </MuiThemeProvider>
