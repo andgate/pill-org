@@ -28,7 +28,6 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
 import ImageEdit from 'material-ui/svg-icons/image/edit';
 
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
 // For responsive-ui
 import MediaQuery from 'react-responsive';
@@ -45,6 +44,9 @@ import {
     TableRow,
     TableRowColumn,
   } from 'material-ui/Table';
+
+import PillsIcon from './pills-icon.js';
+import {blue500} from 'material-ui/styles/colors';
 
 
 var moment = require('moment');
@@ -283,10 +285,24 @@ class MedSchedule extends React.Component {
 
   render() {
     let schedule = this.props.schedule;
+    
+    if(!schedule.length)
+      return (
+        <Paper zDepth={2}>
+        
+          <Subheader>Upcoming</Subheader>
+          <List>
+            <ListItem>
+              <center>No upcoming medications</center>
+            </ListItem>
+          </List>
+        </Paper>
+      )
 
     return (
       <Paper zDepth={2}>
-        <Subheader>Reminders</Subheader>
+        
+        <Subheader>Upcoming</Subheader>
         <List>
             { schedule.map((medName, index) =>
               <div>
@@ -294,6 +310,7 @@ class MedSchedule extends React.Component {
                   onClick={(event) => this.handleTakeMed(index)}
                 >
                   <ActionCheckCircle />{medName}
+                  <PillsIcon />
                 </ListItem>
                 <Divider />
               </div>
@@ -448,7 +465,10 @@ class MedOrg extends React.Component {
       <MuiThemeProvider>
         <div>
 
-          <AppBar title="My Medications" />
+          <AppBar
+            title="My Medications"
+            iconElementLeft={<IconButton><PillsIcon color={blue500} /></IconButton>}
+          />
 
           <MediaQuery minDeviceWidth={1224}>
             <Grid fluid>
