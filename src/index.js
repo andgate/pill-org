@@ -45,19 +45,24 @@ import {
     TableRowColumn,
   } from 'material-ui/Table';
 
-import PillsIcon from './pills-icon.js';
+import SvgIcon from 'material-ui/SvgIcon';
 import {blue500} from 'material-ui/styles/colors';
 
 
 var moment = require('moment');
-
 
 var exampleMeds = [ {name: "Xanax",    dose: "50", units: "mg", time: moment("10 am", "hh a").format()}
                   , {name: "Adderall", dose: "30", units: "mg", time: moment("10 am", "hh a").format()}
                   , {name: "Benedryl", dose: "25", units: "mg", time: moment("10:30 pm", "hh:mm a").format()}
                   ];
 
-var acceptedUnits = ["mg", "g", "kg"];
+const acceptedUnits = ["mg", "g", "kg"];
+
+const PillsIcon = (props) => (
+  <SvgIcon {...props}>
+	  <path d="M251.4 778.8c47.2 0 92.5-13.5 131.3-38.7-1.2-11.6-1.9-23.3-1.9-35 0-2.7 0-5.3.1-8 .4-18.8 2.5-37.2 6.1-55.3 4.2-20.9 10.6-41.4 19-61.3 16.1-38.1 39.1-72.3 68.6-101.7 1.4-1.4 3-2.9 4.4-4.3L276.5 272.2l145.1-145.1c32.1-32.1 74.7-49.7 120.1-49.7 45.4 0 88 17.6 120.1 49.7 32.1 32.1 49.7 74.7 49.7 120.1s-17.6 88-49.7 120.1l-24.2 24.2c18.5-3.7 37.4-5.7 56.6-6.1 2.3 0 4.5-.1 6.8-.1 12.6 0 25.2.7 37.6 2.2 29.1-40.7 44.8-89.3 44.8-140.2 0-64.6-25.1-125.1-70.7-170.8C667.1 30.8 606.4 5.6 541.9 5.6c-64.6 0-125.1 25.1-170.8 70.7L80.7 366.6C35.1 412.2 10 472.8 10 537.4c0 64.6 25.1 125.1 70.7 170.8 45.6 45.5 106.3 70.6 170.7 70.6z"/><path d="M714.1 416.3c-4.4-.2-8.8-.3-13.3-.3-13.5 0-26.7.9-39.8 2.8-24.2 3.3-47.3 9.6-69.3 18.5-34 13.8-64.9 34-91 59.1-29.1 27.9-52.4 61.8-67.8 99.7-8.9 21.9-15.3 45.1-18.5 69.3-1.7 13-2.8 26.2-2.8 39.8 0 4.3.1 8.5.3 12.8 2.8 63.8 26.2 122.3 63.8 168.8l406.6-406.6c-46.3-37.6-104.6-61.1-168.2-63.9zM925.8 523.6L519.2 930.2c49.6 40.1 112.8 64.2 181.6 64.2C860.6 994.4 990 865 990 705.2c0-68.8-24.1-132-64.2-181.6z"/>
+  </SvgIcon>
+);
 
 
 class AddMedDialog extends React.Component {
@@ -103,13 +108,12 @@ class AddMedDialog extends React.Component {
 
   handleChangeTime = (event, time) => {
     let med = this.state.med;
-    med.time = moment(time);
+    med.time = time;
     this.setState({ med: med });
   }
 
-
   handleOpenDialog = () => {
-    this.setState({selectedUnit: 2, med: {name: "", dose: null, units: "mg", time: null},});
+    this.setState({selectedUnit: 2, med: {name: "", dose: "", units: "mg", time: null},});
     this.props.onOpen();
   }
 
@@ -121,6 +125,7 @@ class AddMedDialog extends React.Component {
     event.preventDefault();
     // Deep copy our med
     let med = JSON.parse(JSON.stringify(this.state.med));
+    med.time = moment(med.time);
 
     this.props.onCancel();
     this.props.onSubmit(med);
@@ -188,7 +193,7 @@ class AddMedDialog extends React.Component {
             </div>
             
             <div>
-            <TimePicker floatingLabelText="Time" hintText="Time" value={new Date(med.time)} onChange={this.handleChangeTime} />
+            <TimePicker floatingLabelText="Time" hintText="Time" value={med.time} onChange={this.handleChangeTime} />
             </div>
           </ValidatorForm>
         </Dialog>
@@ -389,7 +394,8 @@ class MedOrg extends React.Component {
         meds: prevState.meds.concat(med)
       }));
 
-    this.scheduleMed(med);
+//    this.scheduleMed(med);
+    this.addToSchedule(med);
   }
 
   handleTakeMed(index)
@@ -402,7 +408,8 @@ class MedOrg extends React.Component {
   componentDidMount() {
     //this.timerId = setInterval(this.tick, 1000);
     
-    this.state.meds.forEach((med) => this.scheduleMed(med));
+    //this.state.meds.forEach((med) => this.scheduleMed(med));
+    this.state.meds.forEach((med) => this.addToSchedule(med));
   }
 
   componentWillUnmount() {
