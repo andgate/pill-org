@@ -324,7 +324,6 @@ class MedSchedule extends React.Component {
                   onClick={(event) => this.handleTakeMed(index)}
                 >
                   <ActionCheckCircle />{medName}
-                  <PillsIcon />
                 </ListItem>
                 <Divider />
               </div>
@@ -487,7 +486,7 @@ class MedOrg extends React.Component {
               <IconButton
                 disabled={true}
               >
-                <PillsIcon color={blue500} />
+                <PillsIcon />
               </IconButton>
             }
           />
