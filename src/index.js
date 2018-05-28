@@ -6,4 +6,3 @@ import MedOrg from 'components/MedOrg.js';
 // ========================================
 
 ReactDOM.render(<MedOrg />, document.getElementById("root"));
-

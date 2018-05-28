@@ -1,5 +1,6 @@
 import React from 'react';
 import MediaQuery from 'react-responsive';
+import SwipeableViews from 'react-swipeable-views';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -8,7 +9,8 @@ import Grid from '@material-ui/core/Grid';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Tabs, Tab } from '@material-ui/core/Tabs';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -19,9 +21,10 @@ import MedList from 'components/MedList.js';
 var moment = require('moment');
 
 
-const styles = {
+const styles = theme => ({
   root: {
     flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
   },
   flex: {
     flex: 1,
@@ -30,7 +33,7 @@ const styles = {
     marginLeft: -12,
     marginRight: 20,
   },
-};
+});
 
 
 class MedOrg extends React.Component
@@ -39,7 +42,8 @@ class MedOrg extends React.Component
     super(props);
     this.state = {
       meds: exampleMeds,
-      schedule: []
+      schedule: [],
+      tabIndex: 0
     };
 
     console.log(exampleMeds);
@@ -48,6 +52,8 @@ class MedOrg extends React.Component
     this.handleTakeMed = this.handleTakeMed.bind(this);
     this.addToSchedule = this.addToSchedule.bind(this);
     //this.tick = this.tick.bind(this);
+    this.handleChangeTab= this.handleChangeTab.bind(this);
+    this.handleSwipeTab = this.handleSwipeTab.bind(this);
   }
 
   handleAddMed(med) {
@@ -124,13 +130,23 @@ class MedOrg extends React.Component
     }
   } */
 
+  handleChangeTab(event, value) {
+    this.setState({ tabIndex: value });
+  }
+
+  handleSwipeTab(index) {
+    this.setState({ tabIndex: index });
+  };
+
   render() {
     let meds = this.state.meds;
     let schedule = this.state.schedule;
-    const { classes } = this.props;
+    let tabIndex = this.state.tabIndex;
+    const { classes, theme } = this.props;
 
     return (
         <div className={classes.root}>
+
           <AppBar position="fixed">
             <Toolbar>
               <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
@@ -140,6 +156,18 @@ class MedOrg extends React.Component
                 My Medications
               </Typography>
             </Toolbar>
+            <MediaQuery maxDeviceWidth={1224}>
+              <Tabs
+                value={tabIndex}
+                onChange={this.handleChangeTab}
+                indicatorColor="primary"
+                textColor="primary"
+                fullWidth
+              >
+                <Tab label="Reminders" />
+                <Tab label="Medications" />
+              </Tabs>
+            </MediaQuery>
           </AppBar>
 
           <MediaQuery minDeviceWidth={1224}>
@@ -155,17 +183,14 @@ class MedOrg extends React.Component
           </MediaQuery>
 
           <MediaQuery maxDeviceWidth={1224}>
-            <Tabs>
-
-              <Tab label="Reminders">
-                <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
-              </Tab>
-
-              <Tab label="Medications">
-                <MedList meds={meds} onAddMed={this.handleAddMed} />
-              </Tab>
-
-            </Tabs>
+            <SwipeableViews
+              axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+              index={tabIndex}
+              onChangeIndex={this.handleSwipeTab}
+            >
+              <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+              <MedList meds={meds} onAddMed={this.handleAddMed} />
+            </SwipeableViews>
           </MediaQuery>
 
         </div>
@@ -176,6 +201,7 @@ class MedOrg extends React.Component
 
 MedOrg.propTypes = {
   classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(MedOrg);
+export default withStyles(styles, {withTheme: true})(MedOrg);
