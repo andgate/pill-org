@@ -1,25 +1,32 @@
 import React from 'react';
 
-import Dialog from 'material-ui/Dialog';
 
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 
-import TimePicker from 'material-ui/TimePicker';
-import TextField from 'material-ui/TextField';
-
-import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 
 import {acceptedUnits} from 'constants.js';
 
 var moment = require('moment');
 
 
+const styles = {
+};
 
-export class AddMedDialog extends React.Component {
+
+
+class AddMedDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -87,70 +94,85 @@ export class AddMedDialog extends React.Component {
 
   render() {
     const visible = this.props.visible;
-
     const med = this.state.med;
     const selectedUnit = this.state.selectedUnit;
+    const { classes } = this.props;
 
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.handleCancelDialog}
-      />,
-      <RaisedButton
-        label="Add"
-        primary={true}
-        disabled={false}
-        onClick={this.handleSubmitDialog}
-      />,
-    ];
 
     return (
-        <Dialog
-          title='Add Medication'
-          actions={actions}
-          modal={false}
-          open={visible}
-          onRequestClose={this.handleCancelDialog}
-        >
-          <ValidatorForm
-                ref="form"
-                onSubmit={this.handleSubmit}
-                onError={errors => console.log(errors)}
-          >
-            <div>
-            <TextValidator
-              floatingLabelText="Name"
+      <Dialog
+        open={visible}
+        onClose={this.handleCancelDialog}
+      >
+        <DialogTitle>Add Medication</DialogTitle>
+
+        <DialogContent>
+          <form autoComplete="off">
+            <TextField
+              label="Name"
               hintText='Name'
-              onChange={this.handleChangeName}
-              name="Name"
               value={med.name}
-              validators={['required']}
-              errorMessages={['this field is required']}
+              onChange={this.handleChangeName} />
+            
+            <TextField
+              label="Dose"
+              hintText='Dose'
+              value={med.dose}
+              onChange={this.handleChangeDose} />
+            
+            <FormControl>
+              <Select
+                value={selectedUnit}
+                onChange={this.handleChangeUnits}
+                floatingLabelText="units"
+              >
+                <MenuItem value={1} primaryText="ug" />
+                <MenuItem value={2} primaryText="mg" />
+                <MenuItem value={3} primaryText="g" />
+              </Select>
+            </FormControl>
+
+            <TextField
+              id="time"
+              label="Time"
+              type="time"
+              defaultValue=""
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                step: 300, // 5 min
+              }}
+              value={med.time}
+              onChange={this.handleChangeTime}
             />
-            </div>
-            
-            <div>
-            <TextField floatingLabelText="Dose" hintText='Dose' value={med.dose} onChange={this.handleChangeDose} />
-            </div>
-            
-            <div>
-            <SelectField
-              floatingLabelText="units"
-              value={selectedUnit}
-              onChange={this.handleChangeUnits}
-            >
-              <MenuItem value={1} primaryText="ug" />
-              <MenuItem value={2} primaryText="mg" />
-              <MenuItem value={3} primaryText="g" />
-            </SelectField>
-            </div>
-            
-            <div>
-            <TimePicker floatingLabelText="Time" hintText="Time" value={med.time} onChange={this.handleChangeTime} />
-            </div>
-          </ValidatorForm>
-        </Dialog>
+          </form>
+        </DialogContent>
+
+        <DialogActions>
+          <Button color="secondary" onClick={this.handleCancelDialog}>
+            Cancel
+          </Button>
+
+          <Button
+            variant="raised"
+            color="primary"
+            onClick={this.handleSubmitDialog}
+          >Add</Button>
+        </DialogActions>
+      </Dialog>
+
     );
   }
 }
+
+
+AddMedDialog.propTypes = {
+  classes: PropTypes.object.isRequired,
+  onOpen: PropTypes.func.isRequired,
+  onCancel: PropTypes.func,
+  onSubmit: PropTypes.func,
+};
+
+
+export default withStyles(styles)(AddMedDialog);

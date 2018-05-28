@@ -1,27 +1,34 @@
-import {AddMedDialog} from 'components/AddMedDialog';
+import AddMedDialog from 'components/AddMedDialog';
 
 import React from 'react';
-import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
-import Subheader from 'material-ui/Subheader';
 
-import IconButton from 'material-ui/IconButton';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-import ContentAddCircle from 'material-ui/svg-icons/content/add-circle';
+import AddCircle from '@material-ui/icons/AddCircle';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 
-import {
-    Table,
-    TableBody,
-    TableHeader,
-    TableHeaderColumn,
-    TableRow,
-    TableRowColumn,
-  } from 'material-ui/Table';
 
 var moment = require('moment');
 
 
-export class MedList extends React.Component {
+const styles = theme => ({
+  root: theme.mixins.gutters({
+    paddingTop: 16,
+    paddingBottom: 16,
+    marginTop: theme.spacing.unit * 3,
+  }),
+});
+
+
+class MedList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,15 +53,16 @@ export class MedList extends React.Component {
   }
 
   render() {
-    let meds = this.props.meds;
+    const meds = this.props.meds;
     const addMedVisible = this.state.addMedVisible;
+    const { classes } = this.props;
 
     return (
-      <Paper zDepth={2}>
-        <Subheader>
+      <Paper className={classes.root} elevation={2}>
+        <Typography variant="subheading">
           Medications
-          <IconButton onClick={this.handleOpenAddMed}><ContentAddCircle /></IconButton>
-        </Subheader>
+          <IconButton onClick={this.handleOpenAddMed}><AddCircle /></IconButton>
+        </Typography>
         <AddMedDialog
           visible={addMedVisible}
           onOpen={this.handleOpenAddMed} 
@@ -63,29 +71,25 @@ export class MedList extends React.Component {
         />
 
         <Table>
-          <TableHeader
-            displaySelectAll={false}
-            adjustForCheckbox={false}
-          >
+          <TableHead>
             <TableRow>
-              <TableHeaderColumn>Name</TableHeaderColumn>
-              <TableHeaderColumn>Dose</TableHeaderColumn>
-              <TableHeaderColumn>Time</TableHeaderColumn>
+              <TableCell>Name</TableCell>
+              <TableCell>Dose</TableCell>
+              <TableCell>Time</TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody displayRowCheckbox={false}>
+          </TableHead>
+          <TableBody>
             { meds.map( med => (
                 <TableRow>
-                  <TableRowColumn>
+                  <TableCell>
                     {med.name}
-                  </TableRowColumn>
-                  <TableRowColumn>
+                  </TableCell>
+                  <TableCell>
                     {med.dose + med.units}
-                  </TableRowColumn>
-                  <TableRowColumn>
+                  </TableCell>
+                  <TableCell>
                     {moment(med.time).format("h:mm a")}
-                  </TableRowColumn>
-                  <Divider />
+                  </TableCell>
                 </TableRow>
             ))}
           </TableBody>
@@ -94,3 +98,11 @@ export class MedList extends React.Component {
     );
   }
 }
+
+
+MedList.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+
+export default withStyles(styles)(MedList);

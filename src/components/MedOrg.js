@@ -1,22 +1,40 @@
 import React from 'react';
 import MediaQuery from 'react-responsive';
 
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Grid from '@material-ui/core/Grid';
 
-import AppBar from 'material-ui/AppBar';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import IconButton from 'material-ui/IconButton';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import { Tabs, Tab } from '@material-ui/core/Tabs';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
 
 import { exampleMeds, PillsIcon } from 'constants.js';
-import { MedSchedule } from 'components/MedSchedule.js';
-import { MedList } from 'components/MedList.js';
+import MedSchedule from 'components/MedSchedule.js';
+import MedList from 'components/MedList.js';
 
 var moment = require('moment');
 
 
-export class MedOrg extends React.Component {
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
+};
+
+
+class MedOrg extends React.Component
+{
   constructor(props) {
     super(props);
     this.state = {
@@ -109,33 +127,30 @@ export class MedOrg extends React.Component {
   render() {
     let meds = this.state.meds;
     let schedule = this.state.schedule;
+    const { classes } = this.props;
 
     return (
-      <MuiThemeProvider>
-        <div>
-
-          <AppBar
-            title="My Medications"
-            iconElementLeft={
-              <IconButton
-                disabled={true}
-              >
+        <div className={classes.root}>
+          <AppBar position="fixed">
+            <Toolbar>
+              <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
                 <PillsIcon />
               </IconButton>
-            }
-          />
+              <Typography variant="title" color="inherit" className={classes.flex}>
+                My Medications
+              </Typography>
+            </Toolbar>
+          </AppBar>
 
           <MediaQuery minDeviceWidth={1224}>
-            <Grid fluid>
-              <Row>
-                <Col xs>
-                  <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
-                </Col>
+            <Grid container spacing={16} style={{ paddingTop: 64 }}>
+              <Grid item xs>
+                <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+              </Grid>
 
-                <Col xs>
-                  <MedList meds={meds} onAddMed={this.handleAddMed} />
-                </Col>
-              </Row>
+              <Grid item xs>
+                <MedList meds={meds} onAddMed={this.handleAddMed} />
+              </Grid>
             </Grid>
           </MediaQuery>
 
@@ -154,7 +169,13 @@ export class MedOrg extends React.Component {
           </MediaQuery>
 
         </div>
-      </MuiThemeProvider>
     );
   }
 }
+
+
+MedOrg.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(MedOrg);

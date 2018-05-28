@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MedOrg } from 'components/MedOrg.js';
+import MedOrg from 'components/MedOrg.js';
 
 
 // ========================================
