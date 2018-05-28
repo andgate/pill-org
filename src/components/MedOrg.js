@@ -156,18 +156,6 @@ class MedOrg extends React.Component
                 My Medications
               </Typography>
             </Toolbar>
-            <MediaQuery maxDeviceWidth={1224}>
-              <Tabs
-                value={tabIndex}
-                onChange={this.handleChangeTab}
-                indicatorColor="primary"
-                textColor="primary"
-                fullWidth
-              >
-                <Tab label="Reminders" />
-                <Tab label="Medications" />
-              </Tabs>
-            </MediaQuery>
           </AppBar>
 
           <MediaQuery minDeviceWidth={1224}>
@@ -183,6 +171,20 @@ class MedOrg extends React.Component
           </MediaQuery>
 
           <MediaQuery maxDeviceWidth={1224}>
+            <AppBar position="static" color="default" style={{ paddingTop: 64 }}>
+                <Tabs
+                  value={tabIndex}
+                  onChange={this.handleChangeTab}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  fullWidth
+                >
+                  <Tab label="Reminders" />
+                  <Tab label="Medications" />
+                </Tabs>
+            </AppBar>
+
+          
             <SwipeableViews
               axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
               index={tabIndex}
@@ -197,6 +199,10 @@ class MedOrg extends React.Component
     );
   }
 }
+
+/*
+ 
+*/
 
 
 MedOrg.propTypes = {
