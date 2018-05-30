@@ -145,9 +145,9 @@ class MedOrg extends React.Component
     const { classes, theme } = this.props;
 
     return (
-        <div className={classes.root}>
+        <Grid container className={classes.root}>
 
-          <AppBar position="fixed">
+          <AppBar position="static">
             <Toolbar>
               <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
                 <PillsIcon />
@@ -159,7 +159,7 @@ class MedOrg extends React.Component
           </AppBar>
 
           <MediaQuery minDeviceWidth={1224}>
-            <Grid container spacing={16} style={{ paddingTop: 64 }}>
+            <Grid container alignItems={'stretch'} spacing={16} style={{ paddingTop: 64 }}>
               <Grid item xs>
                 <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
               </Grid>
@@ -195,7 +195,7 @@ class MedOrg extends React.Component
             </SwipeableViews>
           </MediaQuery>
 
-        </div>
+        </Grid>
     );
   }
 }

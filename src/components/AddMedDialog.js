@@ -16,6 +16,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+
 import {acceptedUnits} from 'constants.js';
 
 var moment = require('moment');
@@ -24,7 +28,7 @@ var moment = require('moment');
 const styles = {
 };
 
-
+const steps = ['Medication Name', 'Dosage', 'Time'];
 
 class AddMedDialog extends React.Component {
   constructor(props) {
@@ -36,6 +40,7 @@ class AddMedDialog extends React.Component {
       isNameValid: false,
       isDoseValid: false,
       isTimeValid: false,
+      activeStep: 0,
     };
 
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -46,6 +51,10 @@ class AddMedDialog extends React.Component {
     this.handleOpenDialog = this.handleOpenDialog.bind(this);
     this.handleCancelDialog = this.handleCancelDialog.bind(this);
     this.handleSubmitDialog = this.handleSubmitDialog.bind(this);
+
+
+    this.handleNext = this.handleNext.bind(this);
+    this.handleBack = this.handleBack.bind(this);
   }
 
 
@@ -92,33 +101,57 @@ class AddMedDialog extends React.Component {
     this.props.onSubmit(med);
   }
 
+
+  handleNext = () => {
+    this.setState((prevState) => ({
+      activeStep: prevState.activeStep + 1,
+    }));
+  };
+
+  handleBack = () => {
+    this.setState((prevState) => ({
+      activeStep: prevState.activeStep - 1,
+    }));
+  };
+
+  handleReset = () => {
+    this.setState({
+      activeStep: 0,
+    });
+  };
+
   render() {
+    const classes = this.props.classes;
     const visible = this.props.visible;
     const med = this.state.med;
     const selectedUnit = this.state.selectedUnit;
-    const { classes } = this.props;
+    const activeStep = this.state.activeStep;
 
+    let activeContent = undefined;
 
-    return (
-      <Dialog
-        open={visible}
-        onClose={this.handleCancelDialog}
-      >
-        <DialogTitle>Add Medication</DialogTitle>
-
-        <DialogContent>
+    switch(activeStep) {
+      case 0:
+        activeContent = (
           <form autoComplete="off">
             <TextField
-              label="Name"
-              hintText='Name'
-              value={med.name}
-              onChange={this.handleChangeName} />
-            
+                  label="Name"
+                  hintText='Name'
+                  value={med.name}
+                  onChange={this.handleChangeName}
+            />
+          </form>
+        );
+        break;
+
+      case 1:
+        activeContent = (
+          <form autoComplete="off">
             <TextField
               label="Dose"
               hintText='Dose'
               value={med.dose}
-              onChange={this.handleChangeDose} />
+              onChange={this.handleChangeDose}
+            />
             
             <FormControl>
               <Select
@@ -131,7 +164,13 @@ class AddMedDialog extends React.Component {
                 <MenuItem value={3} primaryText="g" />
               </Select>
             </FormControl>
+          </form>
+        );
+        break;
 
+      case 2:
+        activeContent = (
+          <form autoComplete="off">
             <TextField
               id="time"
               label="Time"
@@ -147,18 +186,66 @@ class AddMedDialog extends React.Component {
               onChange={this.handleChangeTime}
             />
           </form>
+        );
+        break;
+      
+      default:
+        break;
+    };
+
+
+    return (
+      <Dialog
+        open={visible}
+        onClose={this.handleCancelDialog}
+      >
+        <DialogTitle>
+          Add Medication
+          <Stepper activeStep={activeStep}>
+            { steps.map((label, index) => {
+                return (
+                  <Step key={label} >
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                );
+            })}
+          </Stepper>
+        </DialogTitle>
+
+        <DialogContent>
+          {activeContent}
         </DialogContent>
 
         <DialogActions>
+          <Button
+            disabled={activeStep === 0}
+            onClick={this.handleBack}
+          >
+            Back
+          </Button>
+
+
+
           <Button color="secondary" onClick={this.handleCancelDialog}>
             Cancel
+          </Button>
+
+
+          <Button
+            variant="raised"
+            color="primary"
+            onClick={this.handleNext}
+          >
+            Next
           </Button>
 
           <Button
             variant="raised"
             color="primary"
             onClick={this.handleSubmitDialog}
-          >Add</Button>
+          >
+            Add
+          </Button>
         </DialogActions>
       </Dialog>
 

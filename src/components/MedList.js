@@ -20,11 +20,11 @@ var moment = require('moment');
 
 
 const styles = theme => ({
-  root: theme.mixins.gutters({
-    paddingTop: 16,
-    paddingBottom: 16,
-    marginTop: theme.spacing.unit * 3,
-  }),
+  paper: {
+    padding: theme.spacing.unit * 2,
+    height: '100%',
+    color: theme.palette.text.secondary,
+  },
 });
 
 
@@ -58,7 +58,7 @@ class MedList extends React.Component {
     const { classes } = this.props;
 
     return (
-      <Paper className={classes.root} elevation={2}>
+      <Paper className={classes.paper} elevation={4}>
         <Typography variant="subheading">
           Medications
           <IconButton onClick={this.handleOpenAddMed}><AddCircle /></IconButton>

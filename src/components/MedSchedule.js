@@ -12,11 +12,11 @@ import ActionCheckCircle from '@material-ui/icons/CheckCircle';
 
 
 const styles = theme => ({
-  root: theme.mixins.gutters({
-    paddingTop: 16,
-    paddingBottom: 16,
-    marginTop: theme.spacing.unit * 3,
-  }),
+  paper: {
+    padding: theme.spacing.unit * 2,
+    height: '100%',
+    color: theme.palette.text.secondary,
+  }, 
 });
 
 
@@ -37,7 +37,7 @@ class MedSchedule extends React.Component {
 
     if (!schedule.length)
       return (
-        <Paper zDepth={2}>
+        <Paper className={classes.paper} elevation={4}>
 
           <Typography variant="subheading">Upcoming</Typography>
           <List>
@@ -49,24 +49,21 @@ class MedSchedule extends React.Component {
       )
 
     return (
-      <div>
-      <Paper className={classes.root} elevation={2}>
+      <Paper className={classes.paper} elevation={4}>
 
         <Typography variant="subheading">Upcoming</Typography>
         <List>
           {schedule.map((medName, index) =>
-            <div>
               <ListItem
                 divider={true}
                 onClick={(event) => this.handleTakeMed(index)}
               >
                 <ActionCheckCircle />{medName}
               </ListItem>
-            </div>
           )}
         </List>
+      
       </Paper>
-      </div>
     );
   }
 }
