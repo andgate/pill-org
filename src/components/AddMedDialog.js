@@ -15,10 +15,14 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+
+
+import Grid from '@material-ui/core/Grid';
 
 import {acceptedUnits} from 'constants.js';
 
@@ -28,7 +32,7 @@ var moment = require('moment');
 const styles = {
 };
 
-const steps = ['Medication Name', 'Dosage', 'Time'];
+const steps = ['Name', 'Dosage', 'Time'];
 
 class AddMedDialog extends React.Component {
   constructor(props) {
@@ -133,12 +137,16 @@ class AddMedDialog extends React.Component {
       case 0:
         activeContent = (
           <form autoComplete="off">
-            <TextField
-                  label="Name"
-                  hintText='Name'
-                  value={med.name}
-                  onChange={this.handleChangeName}
-            />
+            <Grid container justify='center' alignItems='flex-end'>
+              <Grid item>
+                <TextField
+                      label="Name"
+                      hintText='Name'
+                      value={med.name}
+                      onChange={this.handleChangeName}
+                />
+              </Grid>
+            </Grid>
           </form>
         );
         break;
@@ -146,24 +154,30 @@ class AddMedDialog extends React.Component {
       case 1:
         activeContent = (
           <form autoComplete="off">
-            <TextField
-              label="Dose"
-              hintText='Dose'
-              value={med.dose}
-              onChange={this.handleChangeDose}
-            />
-            
-            <FormControl>
-              <Select
-                value={selectedUnit}
-                onChange={this.handleChangeUnits}
-                floatingLabelText="units"
-              >
-                <MenuItem value={1} primaryText="ug" />
-                <MenuItem value={2} primaryText="mg" />
-                <MenuItem value={3} primaryText="g" />
-              </Select>
-            </FormControl>
+            <Grid container justify='center' alignItems='flex-end'>
+              <Grid item>
+                <TextField
+                  label="Dose"
+                  hintText='Dose'
+                  value={med.dose}
+                  onChange={this.handleChangeDose}
+                />
+              </Grid>
+
+              <Grid item>
+                <FormControl>
+                  <Select
+                    value={selectedUnit}
+                    onChange={this.handleChangeUnits}
+                    floatingLabelText="units"
+                  >
+                    <MenuItem value={1} primaryText="ug" />
+                    <MenuItem value={2} primaryText="mg" />
+                    <MenuItem value={3} primaryText="g" />
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </form>
         );
         break;
@@ -171,20 +185,38 @@ class AddMedDialog extends React.Component {
       case 2:
         activeContent = (
           <form autoComplete="off">
-            <TextField
-              id="time"
-              label="Time"
-              type="time"
-              defaultValue=""
-              InputLabelProps={{
-                shrink: true,
-              }}
-              inputProps={{
-                step: 300, // 5 min
-              }}
-              value={med.time}
-              onChange={this.handleChangeTime}
-            />
+            <Grid container justify='center' alignItems='flex-end'>
+              <Grid item>
+                <TextField
+                  id="time"
+                  label="Time"
+                  type="time"
+                  defaultValue=""
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{
+                    step: 300, // 5 min
+                  }}
+                  value={med.time}
+                  onChange={this.handleChangeTime}
+                />
+              </Grid>
+            </Grid>
+          </form>
+        );
+        break;
+
+      case 3:
+        activeContent = (
+          <form autoComplete="off">
+            <Grid container justify='center' alignItems='flex-end'>
+              <Grid item>
+                <Typography>
+                  Take {med.name} {med.dose} {med.units} at {med.time}
+                </Typography>
+              </Grid>
+            </Grid>
           </form>
         );
         break;
@@ -200,7 +232,14 @@ class AddMedDialog extends React.Component {
         onClose={this.handleCancelDialog}
       >
         <DialogTitle>
-          Add Medication
+          <Typography variant='subheading'>
+            Add Medication
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent>
+          {activeContent}
+
           <Stepper activeStep={activeStep}>
             { steps.map((label, index) => {
                 return (
@@ -210,10 +249,6 @@ class AddMedDialog extends React.Component {
                 );
             })}
           </Stepper>
-        </DialogTitle>
-
-        <DialogContent>
-          {activeContent}
         </DialogContent>
 
         <DialogActions>
