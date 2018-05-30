@@ -13,6 +13,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
 
 import { exampleMeds, PillsIcon } from 'constants.js';
 import MedSchedule from 'components/MedSchedule.js';
@@ -33,6 +34,7 @@ const styles = theme => ({
     marginLeft: -12,
     marginRight: 20,
   },
+  toolbar: theme.mixins.toolbar,
 });
 
 
@@ -145,57 +147,62 @@ class MedOrg extends React.Component
     const { classes, theme } = this.props;
 
     return (
-        <Grid container className={classes.root}>
+        <Grid container alignItems='stretch' className={classes.root}>
 
-          <AppBar position="fixed">
+          <AppBar color="primary" position="fixed">
             <Toolbar>
               <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
                 <PillsIcon />
               </IconButton>
-              <Typography variant="title" color="inherit" className={classes.flex}>
+              <Typography variant="title" color="inherit">
                 My Medications
               </Typography>
             </Toolbar>
           </AppBar>
 
-          <MediaQuery minDeviceWidth={1224}>
-            <Grid container alignItems={'stretch'} spacing={16} style={{ paddingTop: 64 }}>
-              <Grid item xs>
+          <Paper elevation={0} >
+            <div className={classes.toolbar} />
+
+            <MediaQuery minDeviceWidth={1224}>
+              <Grid container alignItems={'stretch'} spacing={16} >
+                <Grid item xs>
+                  <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+                </Grid>
+
+                <Grid item xs>
+                  <MedList meds={meds} onAddMed={this.handleAddMed} />
+                </Grid>
+              </Grid>
+            </MediaQuery>
+
+            <MediaQuery maxDeviceWidth={1224}>
+              <AppBar position="static" color="default">
+                  <Tabs
+                    value={tabIndex}
+                    onChange={this.handleChangeTab}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    fullWidth
+                  >
+                    <Tab label="Reminders" />
+                    <Tab label="Medications" />
+                  </Tabs>
+              </AppBar>
+
+            
+              <SwipeableViews
+                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                index={tabIndex}
+                onChangeIndex={this.handleSwipeTab}
+              >
                 <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
-              </Grid>
-
-              <Grid item xs>
                 <MedList meds={meds} onAddMed={this.handleAddMed} />
-              </Grid>
-            </Grid>
-          </MediaQuery>
+              </SwipeableViews>
+            </MediaQuery>
 
-          <MediaQuery maxDeviceWidth={1224}>
-            <AppBar position="static" color="default" style={{ paddingTop: 64 }}>
-                <Tabs
-                  value={tabIndex}
-                  onChange={this.handleChangeTab}
-                  indicatorColor="primary"
-                  textColor="primary"
-                  fullWidth
-                >
-                  <Tab label="Reminders" />
-                  <Tab label="Medications" />
-                </Tabs>
-            </AppBar>
-
-          
-            <SwipeableViews
-              axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-              index={tabIndex}
-              onChangeIndex={this.handleSwipeTab}
-            >
-              <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
-              <MedList meds={meds} onAddMed={this.handleAddMed} />
-            </SwipeableViews>
-          </MediaQuery>
-
+          </Paper>
         </Grid>
+
     );
   }
 }

@@ -169,11 +169,10 @@ class AddMedDialog extends React.Component {
                   <Select
                     value={selectedUnit}
                     onChange={this.handleChangeUnits}
-                    floatingLabelText="units"
                   >
-                    <MenuItem value={1} primaryText="ug" />
-                    <MenuItem value={2} primaryText="mg" />
-                    <MenuItem value={3} primaryText="g" />
+                    <MenuItem value={1}>ug</MenuItem>
+                    <MenuItem value={2}>mg</MenuItem>
+                    <MenuItem value={3}>g</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -184,14 +183,14 @@ class AddMedDialog extends React.Component {
 
       case 2:
         activeContent = (
-          <form autoComplete="off">
+          <form autoComplete="off" novalidate>
             <Grid container justify='center' alignItems='flex-end'>
               <Grid item>
                 <TextField
                   id="time"
                   label="Time"
                   type="time"
-                  defaultValue=""
+                  defaultValue="12:00"
                   InputLabelProps={{
                     shrink: true,
                   }}
