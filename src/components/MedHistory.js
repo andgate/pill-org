@@ -8,6 +8,8 @@ import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
+var moment = require('moment');
+
 
 const styles = theme => ({
   paper: {
@@ -46,7 +48,7 @@ class MedHistory extends React.Component {
                 divider={true}
               >
                 <Typography>
-					{med.name} was taken at {med.timeTaken}
+					{med.dose}{med.units} of {med.name} was taken at {moment(med.timeTaken).format('MMMM Do YYYY, h:mm a')}
 				</Typography>
               </ListItem>
           )}

@@ -70,9 +70,11 @@ class MedOrg extends React.Component
   }
 
   handleTakeMed(index) {
+    let timeTaken = moment().format();
+
     this.setState((prevState) => ({
       schedule: prevState.schedule.filter((_, i) => i !== index),
-      history: prevState.history.concat(prevState.schedule[index])
+      history: prevState.history.concat({...prevState.schedule[index], timeTaken: moment().format()})
     }));
   }
 
@@ -194,9 +196,9 @@ class MedOrg extends React.Component
                   textColor="primary"
                   fullWidth
                 >
+                  <Tab label="Medications" />
                   <Tab label="Reminders" />
                   <Tab label="History" />
-                  <Tab label="Medications" />
                 </Tabs>
             </AppBar>
 
@@ -206,9 +208,9 @@ class MedOrg extends React.Component
               index={tabIndex}
               onChangeIndex={this.handleSwipeTab}
             >
+              <MedList meds={meds} onAddMed={this.handleAddMed} />
               <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
               <MedHistory history={history} />
-              <MedList meds={meds} onAddMed={this.handleAddMed} />
             </SwipeableViews>
           </MediaQuery>
 
