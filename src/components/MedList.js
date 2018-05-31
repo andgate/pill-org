@@ -83,7 +83,7 @@ class MedList extends React.Component {
 
         <MediaQuery maxDeviceWidth={1224}>
           <Button onClick={this.handleOpenAddMed} variant="outlined" aria-label="add" className={classes.fab}>
-            <AddIcon />
+            Add
           </Button>
         </MediaQuery>
 
