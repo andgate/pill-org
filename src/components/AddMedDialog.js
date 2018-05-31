@@ -38,13 +38,13 @@ class AddMedDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      activeStep: 0,
       selectedUnit: 2,
       med: {name: "", dose: "", units: "mg", time: null},
       doseErrorText: '',
       isNameValid: false,
       isDoseValid: false,
       isTimeValid: false,
-      activeStep: 0,
     };
 
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -87,7 +87,7 @@ class AddMedDialog extends React.Component {
   }
 
   handleOpenDialog = () => {
-    this.setState({selectedUnit: 2, med: {name: "", dose: "", units: "mg", time: null},});
+    this.setState({activeStep: 0, selectedUnit: 2, med: {name: "", dose: "", units: "mg", time: null},});
     this.props.onOpen();
   }
 
@@ -287,7 +287,7 @@ class AddMedDialog extends React.Component {
           </Button>
 
           {mainButton}
-          
+
         </DialogActions>
       </Dialog>
 
