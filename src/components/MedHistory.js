@@ -24,7 +24,7 @@ class MedHistory extends React.Component {
       return (
         <div>
 			<List>
-				<ListItem>
+				<ListItem  button>
 					History is empty
 				</ListItem>
 			</List>
@@ -35,7 +35,7 @@ class MedHistory extends React.Component {
       <div>
 		<List>
           {history.map((med, index) =>
-              <ListItem
+              <ListItem button
                 divider={true}
               >
                 <Typography>

@@ -20,6 +20,7 @@ import MedList from 'components/MedList.js';
 import MedSchedule from 'components/MedSchedule.js';
 import MedHistory from 'components/MedHistory.js';
 import withRoot from 'root';
+import orange from '@material-ui/core/colors/orange';
 
 var moment = require('moment');
 
@@ -168,7 +169,7 @@ class MedOrg extends React.Component
 
           <AppBar color="primary" position='static'>
             <Toolbar>
-              <IconButton className={classes.menuButton} color="inherit" disabled={true}>
+              <IconButton className={classes.menuButton}>
                 <PillsIcon />
               </IconButton>
               <Typography variant="title" color="inherit">
@@ -235,10 +236,6 @@ class MedOrg extends React.Component
     );
   }
 }
-
-/*
- 
-*/
 
 
 MedOrg.propTypes = {

@@ -34,14 +34,14 @@ class MedSchedule extends React.Component {
     if (!schedule.length)
       return (
         <List>
-          <ListItem>No upcoming medications</ListItem>
+          <ListItem button>No upcoming medications</ListItem>
         </List>
       )
 
     return (
       <List>
         {schedule.map((med, index) =>
-            <ListItem
+            <ListItem button
               divider={true}
               onClick={(event) => this.handleTakeMed(index)}
             >

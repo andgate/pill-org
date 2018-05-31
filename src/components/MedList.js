@@ -31,7 +31,6 @@ const styles = theme => ({
     transition: '.5s ease',
     bottom: theme.spacing.unit * 2,
     right: theme.spacing.unit * 2,
-    margin: theme.spacing.unit,
   }
 });
 
