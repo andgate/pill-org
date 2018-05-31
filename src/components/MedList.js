@@ -81,12 +81,6 @@ class MedList extends React.Component {
         </MediaQuery>
 
 
-        <MediaQuery maxDeviceWidth={1224}>
-          <Button onClick={this.handleOpenAddMed} variant="outlined" aria-label="add" >
-            Add
-          </Button>
-        </MediaQuery>
-
         <Table className={classes.medTable}>
           <TableHead>
             <TableRow>
@@ -117,8 +111,13 @@ class MedList extends React.Component {
             ))}
           </TableBody>
         </Table>
-
         
+        <MediaQuery maxDeviceWidth={1224}>
+          <Button onClick={this.handleOpenAddMed} variant="outlined" aria-label="add" >
+            Add
+          </Button>
+        </MediaQuery>
+
       </div>
     );
   }
