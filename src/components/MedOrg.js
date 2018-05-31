@@ -26,10 +26,14 @@ var moment = require('moment');
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
   },
   flex: {
     flex: 1,
+  },
+  content: {
+    paddingLeft: theme.spacing.unit * 2,
+    paddingRight: theme.spacing.unit * 2,
+    height: "100%",
   },
   menuButton: {
     marginLeft: -12,
@@ -169,13 +173,9 @@ class MedOrg extends React.Component
           <div className={classes.toolbar} />
 
           <MediaQuery minDeviceWidth={1224}>
-            <Grid container alignItems={'stretch'} spacing={16} >
-              <Grid item>
-                <MedList meds={meds} onAddMed={this.handleAddMed} />
-              </Grid>
-
-              <Grid item>
-                <Grid container direction='column' spacing={16} >
+            <Grid container alignItems={'stretch'} spacing={16} className={classes.content}>
+              <Grid item xs={4}>
+                <Grid container direction='column' alignItems='' spacing={16} >
                   <Grid item xs>
                     <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
                   </Grid>
@@ -183,6 +183,10 @@ class MedOrg extends React.Component
                     <MedHistory history={history} />
                   </Grid>
                 </Grid>
+              </Grid>
+            
+              <Grid item xs={8}>
+                <MedList meds={meds} onAddMed={this.handleAddMed} />
               </Grid>
             </Grid>
           </MediaQuery>
