@@ -164,7 +164,7 @@ class MedOrg extends React.Component
             </Toolbar>
           </AppBar>
 
-            <div className={classes.toolbar} />
+          <div className={classes.toolbar} />
 
           <MediaQuery minDeviceWidth={1224}>
             <Grid container alignItems={'stretch'} spacing={16} >
