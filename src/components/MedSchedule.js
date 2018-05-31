@@ -33,26 +33,23 @@ class MedSchedule extends React.Component {
 
     if (!schedule.length)
       return (
-        <div>
-          <Typography variant='display1'>No upcoming medications</Typography>
-        </div>
+        <List>
+          <ListItem>No upcoming medications</ListItem>
+        </List>
       )
 
     return (
-      <div>
-        <List>
-          {schedule.map((med, index) =>
-              <ListItem
-                divider={true}
-                onClick={(event) => this.handleTakeMed(index)}
-              >
-                <ActionCheckCircle color="secondary"/>
-                <Typography variant='display1'>{med.name}</Typography>
-              </ListItem>
-          )}
-        </List>
-      
-      </div>
+      <List>
+        {schedule.map((med, index) =>
+            <ListItem
+              divider={true}
+              onClick={(event) => this.handleTakeMed(index)}
+            >
+              <ActionCheckCircle color="secondary"/>
+              <Typography variant='display1'>{med.name}</Typography>
+            </ListItem>
+        )}
+      </List>
     );
   }
 }

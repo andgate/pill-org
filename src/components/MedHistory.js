@@ -23,11 +23,11 @@ class MedHistory extends React.Component {
     if (!history.length)
       return (
         <div>
-          <List>
-            <ListItem>
-              <center>empty</center>
-            </ListItem>
-          </List>
+			<List>
+				<ListItem>
+					History is empty
+				</ListItem>
+			</List>
         </div>
       )
 
