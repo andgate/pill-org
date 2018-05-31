@@ -4,6 +4,7 @@ import React from 'react';
 import MediaQuery from 'react-responsive';
 
 import PropTypes from 'prop-types';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 
 import AddCircle from '@material-ui/icons/AddCircle';
@@ -23,8 +24,7 @@ var moment = require('moment');
 
 const styles = theme => ({
   medTable: {
-    maxHeight: '100%',
-    overflow: 'auto',
+    minHeight: '100%',
   },
   fab: {
     position: 'absolute',

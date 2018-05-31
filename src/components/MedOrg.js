@@ -19,6 +19,7 @@ import { exampleMeds, PillsIcon } from 'constants.js';
 import MedList from 'components/MedList.js';
 import MedSchedule from 'components/MedSchedule.js';
 import MedHistory from 'components/MedHistory.js';
+import withRoot from 'root';
 
 var moment = require('moment');
 
@@ -26,7 +27,6 @@ var moment = require('moment');
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: "100%",
   },
   flex: {
     flex: 1,
@@ -166,7 +166,7 @@ class MedOrg extends React.Component
     return (
         <div className={classes.root}>
 
-          <AppBar color="primary">
+          <AppBar color="primary" position='static'>
             <Toolbar>
               <IconButton className={classes.menuButton} color="inherit" disabled={true}>
                 <PillsIcon />
@@ -176,8 +176,6 @@ class MedOrg extends React.Component
               </Typography>
             </Toolbar>
           </AppBar>
-
-          <div className={classes.toolbar} />
 
           <MediaQuery minDeviceWidth={1224}>
             <Grid container alignItems={'stretch'} spacing={16} className={classes.content}>
@@ -248,4 +246,4 @@ MedOrg.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, {withTheme: true})(MedOrg);
+export default withRoot(withStyles(styles, {withTheme: true})(MedOrg));

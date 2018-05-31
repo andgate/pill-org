@@ -41,10 +41,6 @@ class AddMedDialog extends React.Component {
       activeStep: 0,
       selectedUnit: 2,
       med: {name: "", dose: "", units: "mg", time: null},
-      doseErrorText: '',
-      isNameValid: false,
-      isDoseValid: false,
-      isTimeValid: false,
     };
 
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -118,11 +114,6 @@ class AddMedDialog extends React.Component {
     }));
   };
 
-  handleReset = () => {
-    this.setState({
-      activeStep: 0,
-    });
-  };
 
   render() {
     const classes = this.props.classes;
