@@ -158,7 +158,8 @@ class MedOrg extends React.Component
     let tabIndex = this.state.tabIndex;
     const { classes, theme } = this.props;
 
-    const remindersLabel = "Reminders (${schedule.length})";
+    const remindersLabel = !schedule.length ? `Reminders (${schedule.length})`
+                                            : 'Reminders';
 
     return (
         <div className={classes.root}>
