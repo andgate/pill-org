@@ -25,6 +25,10 @@ const styles = theme => ({
     height: '100%',
     color: theme.palette.text.secondary,
   },
+  medTable: {
+    maxHeight: '100%',
+    overflow: 'auto',
+  },
 });
 
 
@@ -70,7 +74,7 @@ class MedList extends React.Component {
           onSubmit={this.handleSubmitAddMed}
         />
 
-        <Table>
+        <Table className={classes.medTable}>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -82,13 +86,19 @@ class MedList extends React.Component {
             { meds.map( med => (
                 <TableRow>
                   <TableCell>
-                    {med.name}
+                    <Typography>
+                      {med.name}
+                    </Typography>
                   </TableCell>
                   <TableCell>
-                    {med.dose + med.units}
+                    <Typography>
+                      {med.dose + med.units} 
+                    </Typography>
                   </TableCell>
                   <TableCell>
-                    {moment(med.time).format("h:mm a")}
+                    <Typography>
+                      {moment(med.time).format("h:mm a")}
+                    </Typography>
                   </TableCell>
                 </TableRow>
             ))}

@@ -26,6 +26,7 @@ var moment = require('moment');
 const styles = theme => ({
   root: {
     flexGrow: 1,
+    height: "100%",
   },
   flex: {
     flex: 1,
@@ -34,6 +35,7 @@ const styles = theme => ({
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
     height: "100%",
+    maxHeight: "100%"
   },
   menuButton: {
     marginLeft: -12,

@@ -59,7 +59,8 @@ class MedSchedule extends React.Component {
                 divider={true}
                 onClick={(event) => this.handleTakeMed(index)}
               >
-                <ActionCheckCircle />{med.name}
+                <ActionCheckCircle />
+                <Typography>{med.name}</Typography>
               </ListItem>
           )}
         </List>

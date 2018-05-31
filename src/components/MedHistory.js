@@ -34,7 +34,7 @@ class MedHistory extends React.Component {
           <Typography variant="subheading">History</Typography>
           <List>
             <ListItem>
-              <center>History Empty</center>
+              <center>empty</center>
             </ListItem>
           </List>
         </Paper>

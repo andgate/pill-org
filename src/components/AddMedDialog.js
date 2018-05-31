@@ -133,6 +133,30 @@ class AddMedDialog extends React.Component {
 
     let activeContent = undefined;
 
+    let mainButton = undefined;
+
+    if(activeStep === 3) {
+      mainButton = (
+        <Button
+          variant="raised"
+          color="primary"
+          onClick={this.handleSubmitDialog}
+        >
+          Okay
+        </Button>
+      );
+    } else {
+      mainButton = (
+        <Button
+          variant="raised"
+          color="primary"
+          onClick={this.handleNext}
+        >
+          Next
+        </Button>
+      );
+    }
+
     switch(activeStep) {
       case 0:
         activeContent = (
@@ -251,6 +275,10 @@ class AddMedDialog extends React.Component {
         </DialogContent>
 
         <DialogActions>
+          <Button color="secondary" onClick={this.handleCancelDialog}>
+            Cancel
+          </Button>
+
           <Button
             disabled={activeStep === 0}
             onClick={this.handleBack}
@@ -258,28 +286,8 @@ class AddMedDialog extends React.Component {
             Back
           </Button>
 
-
-
-          <Button color="secondary" onClick={this.handleCancelDialog}>
-            Cancel
-          </Button>
-
-
-          <Button
-            variant="raised"
-            color="primary"
-            onClick={this.handleNext}
-          >
-            Next
-          </Button>
-
-          <Button
-            variant="raised"
-            color="primary"
-            onClick={this.handleSubmitDialog}
-          >
-            Add
-          </Button>
+          {mainButton}
+          
         </DialogActions>
       </Dialog>
 
