@@ -80,6 +80,13 @@ class MedList extends React.Component {
           </Typography>
         </MediaQuery>
 
+
+        <MediaQuery maxDeviceWidth={1224}>
+          <Button onClick={this.handleOpenAddMed} variant="outlined" aria-label="add" className={classes.fab}>
+            <AddIcon />
+          </Button>
+        </MediaQuery>
+
         <Table className={classes.medTable}>
           <TableHead>
             <TableRow>
@@ -111,11 +118,6 @@ class MedList extends React.Component {
           </TableBody>
         </Table>
 
-        <MediaQuery maxDeviceWidth={1224}>
-          <Button onClick={this.handleOpenAddMed} variant="fab" color="primary" aria-label="add" className={classes.fab}>
-            <AddIcon />
-          </Button>
-        </MediaQuery>
         
       </div>
     );
