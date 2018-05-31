@@ -53,12 +53,12 @@ class MedSchedule extends React.Component {
 
         <Typography variant="subheading">Upcoming</Typography>
         <List>
-          {schedule.map((medName, index) =>
+          {schedule.map((med, index) =>
               <ListItem
                 divider={true}
                 onClick={(event) => this.handleTakeMed(index)}
               >
-                <ActionCheckCircle />{medName}
+                <ActionCheckCircle />{med.name}
               </ListItem>
           )}
         </List>

@@ -16,8 +16,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 
 import { exampleMeds, PillsIcon } from 'constants.js';
-import MedSchedule from 'components/MedSchedule.js';
 import MedList from 'components/MedList.js';
+import MedSchedule from 'components/MedSchedule.js';
+import MedHistory from 'components/MedHistory.js';
 
 var moment = require('moment');
 
@@ -45,6 +46,7 @@ class MedOrg extends React.Component
     this.state = {
       meds: exampleMeds,
       schedule: [],
+      history: [],
       tabIndex: 0
     };
 
@@ -69,7 +71,14 @@ class MedOrg extends React.Component
 
   handleTakeMed(index) {
     this.setState((prevState) => ({
-      schedule: prevState.schedule.filter((_, i) => i !== index)
+      schedule: prevState.schedule.filter((_, i) => i !== index),
+      history: prevState.history.concat(prevState.schedule[index])
+    }));
+  }
+
+  addToSchedule(med) {
+    this.setState((prevState) => ({
+      schedule: prevState.schedule.concat(med)
     }));
   }
 
@@ -100,12 +109,6 @@ class MedOrg extends React.Component
     console.log("Med scheduled in" + moment(dur).format())
 
     setTimeout((() => this.addToSchedule(med)), msTill);
-  }
-
-  addToSchedule(med) {
-    this.setState((prevState) => ({
-      schedule: prevState.schedule.concat(med.name)
-    }));
   }
 
   /*
@@ -143,13 +146,14 @@ class MedOrg extends React.Component
   render() {
     let meds = this.state.meds;
     let schedule = this.state.schedule;
+    let history = this.state.history;
     let tabIndex = this.state.tabIndex;
     const { classes, theme } = this.props;
 
     return (
-        <Grid container alignItems='stretch' className={classes.root}>
+        <div className={classes.root}>
 
-          <AppBar color="primary" position="fixed">
+          <AppBar color="primary">
             <Toolbar>
               <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
                 <PillsIcon />
@@ -160,49 +164,55 @@ class MedOrg extends React.Component
             </Toolbar>
           </AppBar>
 
-          <Paper elevation={0} >
             <div className={classes.toolbar} />
 
-            <MediaQuery minDeviceWidth={1224}>
-              <Grid container alignItems={'stretch'} spacing={16} >
-                <Grid item xs>
-                  <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
-                </Grid>
+          <MediaQuery minDeviceWidth={1224}>
+            <Grid container alignItems={'stretch'} spacing={16} >
+              <Grid item>
+                <MedList meds={meds} onAddMed={this.handleAddMed} />
+              </Grid>
 
-                <Grid item xs>
-                  <MedList meds={meds} onAddMed={this.handleAddMed} />
+              <Grid item>
+                <Grid container direction='column' spacing={16} >
+                  <Grid item xs>
+                    <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+                  </Grid>
+                  <Grid item xs>
+                    <MedHistory history={history} />
+                  </Grid>
                 </Grid>
               </Grid>
-            </MediaQuery>
+            </Grid>
+          </MediaQuery>
 
-            <MediaQuery maxDeviceWidth={1224}>
-              <AppBar position="static" color="default">
-                  <Tabs
-                    value={tabIndex}
-                    onChange={this.handleChangeTab}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    fullWidth
-                  >
-                    <Tab label="Reminders" />
-                    <Tab label="Medications" />
-                  </Tabs>
-              </AppBar>
+          <MediaQuery maxDeviceWidth={1224}>
+            <AppBar position="static" color="default">
+                <Tabs
+                  value={tabIndex}
+                  onChange={this.handleChangeTab}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  fullWidth
+                >
+                  <Tab label="Reminders" />
+                  <Tab label="History" />
+                  <Tab label="Medications" />
+                </Tabs>
+            </AppBar>
 
-            
-              <SwipeableViews
-                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                index={tabIndex}
-                onChangeIndex={this.handleSwipeTab}
-              >
-                <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
-                <MedList meds={meds} onAddMed={this.handleAddMed} />
-              </SwipeableViews>
-            </MediaQuery>
+          
+            <SwipeableViews
+              axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+              index={tabIndex}
+              onChangeIndex={this.handleSwipeTab}
+            >
+              <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+              <MedHistory history={history} />
+              <MedList meds={meds} onAddMed={this.handleAddMed} />
+            </SwipeableViews>
+          </MediaQuery>
 
-          </Paper>
-        </Grid>
-
+        </div>
     );
   }
 }
