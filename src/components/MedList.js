@@ -111,11 +111,11 @@ class MedList extends React.Component {
           </TableBody>
         </Table>
 
-        {/*<MediaQuery maxDeviceWidth={1224}>*/}
+        <MediaQuery maxDeviceWidth={1224}>
           <Button onClick={this.handleOpenAddMed} variant="fab" color="primary" aria-label="add" className={classes.fab}>
             <AddIcon />
           </Button>
-        {/*</MediaQuery>*/}
+        </MediaQuery>
         
       </div>
     );
