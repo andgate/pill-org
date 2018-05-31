@@ -201,7 +201,7 @@ class MedOrg extends React.Component
                   fullWidth
                 >
                   <Tab label="Medications" />
-                  <Tab label="Reminders" />
+                  <Tab label="Reminders (${schedule.length})" />
                   <Tab label="History" />
                 </Tabs>
             </AppBar>

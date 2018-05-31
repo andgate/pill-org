@@ -14,6 +14,8 @@ import ActionCheckCircle from '@material-ui/icons/CheckCircle';
 const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 2,
+    maxHeight: '100%',
+    overflow: 'auto',
     color: theme.palette.text.secondary,
   }, 
 });
