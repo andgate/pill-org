@@ -26,7 +26,10 @@ const styles = theme => ({
     maxHeight: '100%',
     overflow: 'auto',
   },
-  button: {
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing.unit * 2,
+    right: theme.spacing.unit * 2,
     margin: theme.spacing.unit,
   }
 });
@@ -109,7 +112,7 @@ class MedList extends React.Component {
         </Table>
 
         <MediaQuery maxDeviceWidth={1224}>
-          <Button onClick={this.handleOpenAddMed} variant="fab" color="primary" aria-label="add" className={classes.button}>
+          <Button onClick={this.handleOpenAddMed} variant="fab" color="primary" aria-label="add" className={classes.fab}>
             <AddIcon />
           </Button>
         </MediaQuery>
