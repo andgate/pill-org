@@ -158,6 +158,8 @@ class MedOrg extends React.Component
     let tabIndex = this.state.tabIndex;
     const { classes, theme } = this.props;
 
+    const remindersLabel = "Reminders (${schedule.length})";
+
     return (
         <div className={classes.root}>
 
@@ -203,7 +205,7 @@ class MedOrg extends React.Component
                   fullWidth
                 >
                   <Tab label="Medications" />
-                  <Tab label="Reminders (${schedule.length})" />
+                  <Tab label={remindersLabel} />
                   <Tab label="History" />
                 </Tabs>
             </AppBar>
