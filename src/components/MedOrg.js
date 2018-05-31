@@ -41,6 +41,10 @@ const styles = theme => ({
     marginLeft: -12,
     marginRight: 20,
   },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    color: theme.palette.text.secondary,
+  }, 
   toolbar: theme.mixins.toolbar,
 });
 
@@ -76,8 +80,6 @@ class MedOrg extends React.Component
   }
 
   handleTakeMed(index) {
-    let timeTaken = moment().format();
-
     this.setState((prevState) => ({
       schedule: prevState.schedule.filter((_, i) => i !== index),
       history: prevState.history.concat({...prevState.schedule[index], timeTaken: moment().format()})
@@ -166,7 +168,7 @@ class MedOrg extends React.Component
 
           <AppBar color="primary">
             <Toolbar>
-              <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+              <IconButton className={classes.menuButton} color="inherit" disabled={true}>
                 <PillsIcon />
               </IconButton>
               <Typography variant="title" color="inherit">
@@ -182,16 +184,24 @@ class MedOrg extends React.Component
               <Grid item xs={4}>
                 <Grid container direction='column' alignItems='' spacing={16} >
                   <Grid item xs>
-                    <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+                    <Paper className={classes.paper} elevation={4}>
+                      <Typography variant="subheading">Upcoming</Typography>
+                      <MedSchedule schedule={schedule} onTakeMed={this.handleTakeMed} />
+                    </Paper>
                   </Grid>
                   <Grid item xs>
-                    <MedHistory history={history} />
+                    <Paper className={classes.paper} elevation={4}>
+                      <Typography variant="subheading">History</Typography>
+                      <MedHistory history={history} />
+                    </Paper>
                   </Grid>
                 </Grid>
               </Grid>
             
               <Grid item xs={8}>
-                <MedList meds={meds} onAddMed={this.handleAddMed} />
+                <Paper className={classes.paper} elevation={4}>
+                  <MedList meds={meds} onAddMed={this.handleAddMed} />
+                </Paper>
               </Grid>
             </Grid>
           </MediaQuery>

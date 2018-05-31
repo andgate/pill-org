@@ -5,20 +5,13 @@ import { withStyles } from '@material-ui/core/styles';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 var moment = require('moment');
 
 
 const styles = theme => ({
-  paper: {
-    padding: theme.spacing.unit * 2,
-    height: '100%',
-	maxHeight: '100%',
-    overflow: 'auto',
-    color: theme.palette.text.secondary,
-  }, 
+
 });
 
 
@@ -29,22 +22,18 @@ class MedHistory extends React.Component {
 
     if (!history.length)
       return (
-        <Paper className={classes.paper} elevation={4}>
-
-          <Typography variant="subheading">History</Typography>
+        <div>
           <List>
             <ListItem>
               <center>empty</center>
             </ListItem>
           </List>
-        </Paper>
+        </div>
       )
 
     return (
-      <Paper className={classes.paper} elevation={4}>
-
-        <Typography variant="subheading">History</Typography>
-        <List>
+      <div>
+		<List>
           {history.map((med, index) =>
               <ListItem
                 divider={true}
@@ -55,8 +44,7 @@ class MedHistory extends React.Component {
               </ListItem>
           )}
         </List>
-      
-      </Paper>
+      </div>
     );
   }
 }

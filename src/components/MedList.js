@@ -1,13 +1,15 @@
 import AddMedDialog from 'components/AddMedDialog';
 
 import React from 'react';
+import MediaQuery from 'react-responsive';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import AddCircle from '@material-ui/icons/AddCircle';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -20,15 +22,13 @@ var moment = require('moment');
 
 
 const styles = theme => ({
-  paper: {
-    padding: theme.spacing.unit * 2,
-    height: '100%',
-    color: theme.palette.text.secondary,
-  },
   medTable: {
     maxHeight: '100%',
     overflow: 'auto',
   },
+  button: {
+    margin: theme.spacing.unit,
+  }
 });
 
 
@@ -62,17 +62,20 @@ class MedList extends React.Component {
     const { classes } = this.props;
 
     return (
-      <Paper className={classes.paper} elevation={4}>
-        <Typography variant="subheading">
-          Medications
-          <IconButton onClick={this.handleOpenAddMed}><AddCircle /></IconButton>
-        </Typography>
+      <div>
         <AddMedDialog
           visible={addMedVisible}
           onOpen={this.handleOpenAddMed} 
           onCancel={this.handleCancelAddMed}
           onSubmit={this.handleSubmitAddMed}
         />
+
+        <MediaQuery minDeviceWidth={1224}>
+          <Typography variant="subheading">
+            Medications
+            <IconButton onClick={this.handleOpenAddMed}><AddCircle /></IconButton>
+          </Typography>
+        </MediaQuery>
 
         <Table className={classes.medTable}>
           <TableHead>
@@ -104,7 +107,14 @@ class MedList extends React.Component {
             ))}
           </TableBody>
         </Table>
-      </Paper>
+
+        <MediaQuery maxDeviceWidth={1224}>
+          <Button onClick={this.handleOpenAddMed} variant="fab" color="primary" aria-label="add" className={classes.button}>
+            <AddIcon />
+          </Button>
+        </MediaQuery>
+
+      </div>
     );
   }
 }
