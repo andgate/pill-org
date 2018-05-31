@@ -33,15 +33,9 @@ class MedSchedule extends React.Component {
 
     if (!schedule.length)
       return (
-        <Paper className={classes.paper} elevation={4}>
-
-          <Typography variant="subheading">Upcoming</Typography>
-          <List>
-            <ListItem>
-              <center>No upcoming medications</center>
-            </ListItem>
-          </List>
-        </Paper>
+        <div>
+          <Typography variant='display1'>No upcoming medications</Typography>
+        </div>
       )
 
     return (
@@ -52,8 +46,8 @@ class MedSchedule extends React.Component {
                 divider={true}
                 onClick={(event) => this.handleTakeMed(index)}
               >
-                <ActionCheckCircle />
-                <Typography>{med.name}</Typography>
+                <ActionCheckCircle color="secondary"/>
+                <Typography variant='display1'>{med.name}</Typography>
               </ListItem>
           )}
         </List>

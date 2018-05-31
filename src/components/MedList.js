@@ -27,7 +27,7 @@ const styles = theme => ({
     overflow: 'auto',
   },
   fab: {
-    position: 'absolute',
+    position: 'fixed',
     bottom: theme.spacing.unit * 2,
     right: theme.spacing.unit * 2,
     margin: theme.spacing.unit,
@@ -76,7 +76,7 @@ class MedList extends React.Component {
         <MediaQuery minDeviceWidth={1224}>
           <Typography variant="subheading">
             Medications
-            <IconButton onClick={this.handleOpenAddMed}><AddCircle /></IconButton>
+            <IconButton onClick={this.handleOpenAddMed} color="primary"><AddCircle /></IconButton>
           </Typography>
         </MediaQuery>
 
@@ -111,12 +111,12 @@ class MedList extends React.Component {
           </TableBody>
         </Table>
 
-        <MediaQuery maxDeviceWidth={1224}>
+        {/*<MediaQuery maxDeviceWidth={1224}>*/}
           <Button onClick={this.handleOpenAddMed} variant="fab" color="primary" aria-label="add" className={classes.fab}>
             <AddIcon />
           </Button>
-        </MediaQuery>
-
+        {/*</MediaQuery>*/}
+        
       </div>
     );
   }
